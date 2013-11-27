@@ -1,0 +1,6 @@
+{% for s in new_info %}
+<div class="album col-md-3">
+    {{ s['artist'] }} - {{ s['album'] }}
+    <img class="details" src="{{ s['album art'] }}"></img>
+</div>
+{% endfor %}

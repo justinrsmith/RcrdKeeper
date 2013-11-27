@@ -1,0 +1,12 @@
+.mgmt {
+    float: right;
+}
+
+.alert_area {
+    display: none;
+}
+
+.glyphicon {
+    position: absolute!important;
+    right: 50px;
+}
