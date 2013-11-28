@@ -17,7 +17,7 @@
 </div><!-- /.modal -->
 
 <!-- infoModal -->
-<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="infoModal{{ s['id'] }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -25,7 +25,20 @@
                 <h4 class="modal-title" id="modal-title">Information</h4>
             </div>
             <div class="modal-body">
-                
+                <div class="row">
+                    <div class="col-md-3 col-md-offset-3">
+                        <b>Release Date: </b>
+                    </div>
+                    <div class="col-md-4">
+                         {{ s['release_date'] }}
+                    </div>
+                    <div class="col-md-3 col-md-offset-3">
+                        <b>Duration: </b> 
+                    </div>
+                    <div class="col-md-4">
+                        {{ s['duration'] }}
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

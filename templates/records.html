@@ -31,18 +31,17 @@
             {% for s in selection %}
             <div class="col-md-3">
                 {{ s['artist'] }} - {{ s['album'] }}
-                <img class="get_details" id="{{ s['album'] }}" src="{{ s['album art'] }}"></img>
+                <img class="get_details" id="{{ s['id'] }}" src="{{ s['album art'] }}"></img>
                 <a data-toggle="modal" href="#editModal">
                 <span class="glyphicon glyphicon-pencil"></span>
                 </a>
             </div>
+                {% include 'modals.html' %}
             {% endfor %}
         </div>
 
     </body>
 </div>
-
-{% include 'modals.html' %}
 
 <script>
 
@@ -62,7 +61,9 @@ $('.sub').click(function(e){
 })
 
 $('.get_details').dblclick(function(){
-    $('#infoModal').modal('show')
+    var id = $(this).attr('id')
+    console.log(id)
+    $('#infoModal' + id).modal('show')
 })
 
 </script>

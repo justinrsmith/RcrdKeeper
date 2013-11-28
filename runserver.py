@@ -47,7 +47,8 @@ def before_request():
 
 @app.route('/records', methods=['GET'])
 def get_records():
-    selection = list(r.table('records').run(g.rdb_conn))
+    selection = list(r.table('records').order_by(
+                                    'artist').run(g.rdb_conn))
 
     return render_template('records.html',
                             selection=selection)
@@ -61,6 +62,9 @@ def new_record():
     album_info = rdio.call('search', {'query': request.form['album'], 'types':
                                              'album'})
 
+    #album_info_extend = rdio.call('getAlbumsForArtist', {'query':})
+
+    print album_info
     #retrieve album artwork
     for x in album_info['result']['results']:
         if x['artist'] == request.form['artist']:
@@ -91,4 +95,4 @@ if __name__ == "__main__":
     if args.run_setup:
         dbSetup()
     else:
-        app.run(host='10.0.0.15', debug=True)
+        app.run(host='localhost', debug=True)
