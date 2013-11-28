@@ -6,48 +6,35 @@
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/ui-lightness/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="../static/rcrd-styles.css">
+<script src="../static/bootstrap/js/bootstrap.min.js"></script>
 
 <div class="container">
 <div class="page-header">
   <h1>RcrdKeepr <small class ="mgmt">Vinyl Management powered by <img width="75" height="28" src='http://developer.rdio.com/files/RdioBlueLogo.png'></img></small></h1>
 </div>
     <body>
+        <div class="messages"></div>
         <div class="row">
-            <form class="new_record form-horizontal" action="/submit" method="post">
-                <div class="form-group">
-                    <label for="artist" class="col-sm-2 control-label">Artist:</label>
-                    <div class="col-sm-10">
-                        <input type="text" id = "artist" name="artist">
+            <center>
+                <form class="new_record form-inline" action="/submit" method="post" role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="artist" name="artist" placeholder="Enter Artist Name">
                     </div>
-                </div>
-                <div class="form-group">
-                    <label for="album" class="col-sm-2 control-label">Album:</label>
-                    <div class="col-sm-10">
-                        <input type="text" id = "album" name="album">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="album" name="album" placeholder="Enter Album Name">
                     </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="sub btn btn-default">Add Record</button>
-                    </div>
-                </div>
-            </form>
+                    <button type="submit" class="sub btn btn-default">Add Record</button>
+                </form>
+            </center>
         </div>
         <div class="albums row">
             {% for s in selection %}
             <div class="col-md-3">
                 {{ s['artist'] }} - {{ s['album'] }}
                 <img class="get_details" id="{{ s['album'] }}" src="{{ s['album art'] }}"></img>
-                <a data=toggle="modal" href="#editModal"><span class="glyphicon glyphicon-pencil"></span></a>
-                <div class="details" id="{{s['album']}}" title="Album Information">
-                    <p>
-                        Release Date: {{ s['release_date'] }}
-                    </p>
-                    <p>
-                        Duration: {{ s['duration'] }} minutes
-                    </p>
-                </div>
-
+                <a data-toggle="modal" href="#editModal">
+                <span class="glyphicon glyphicon-pencil"></span>
+                </a>
             </div>
             {% endfor %}
         </div>
@@ -65,17 +52,17 @@ $('.sub').click(function(e){
         success: function(r){
             console.log(r)
             $('.albums').append(r)
+            $('.messages').addClass('alert alert-success alert-dismissable')
+            $('.messages').append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Record Successfully Added')
         },
         error: function(e){
             console.log(e)
         }
     })
 })
-$('.details').dialog({ autoOpen: false })
+
 $('.get_details').dblclick(function(){
-    console.log($(this).attr('id'))
-    var album = $(this).attr('id')
-    $('.details').dialog('open');
+    $('#infoModal').modal('show')
 })
 
 </script>

@@ -1,5 +1,5 @@
 import argparse
-from flask import Flask, g, render_template, request, jsonify
+from flask import Flask, g, render_template, request, jsonify, flash
 import os
 import json
 import rethinkdb as r
@@ -26,6 +26,7 @@ def dbSetup():
 
 
 app = Flask(__name__)
+app.secret_key = 'some_secret'
 app.config.from_object(__name__)
 
 
@@ -73,7 +74,7 @@ def new_record():
                             'album art': album_art}]
 
     #insert album info
-    records.insert([{'artist': request.form['artist'],
+    succ = records.insert([{'artist': request.form['artist'],
                         'album': request.form['album'],
                             'album art': album_art,
                             'release_date': release_date,
@@ -90,4 +91,4 @@ if __name__ == "__main__":
     if args.run_setup:
         dbSetup()
     else:
-        app.run(debug=True)
+        app.run(host='10.0.0.15', debug=True)
