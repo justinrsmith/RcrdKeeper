@@ -30,9 +30,14 @@
         <div class="albums row">
             {% for s in selection %}
             <div class="col-md-3">
+                <div class="delete-wrap">
+                    <a href="#" class="delete">
+                        <span id="delete_logo" class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </div>
                 {{ s['artist'] }} - {{ s['album'] }}
                 <img class="get_details" id="{{ s['id'] }}" src="{{ s['album art'] }}"></img>
-                <a data-toggle="modal" href="#editModal">
+                <a data-toggle="modal" href="#editModal{{ s['id'] }}">
                 <span class="glyphicon glyphicon-pencil"></span>
                 </a>
             </div>
@@ -64,6 +69,28 @@ $('.get_details').dblclick(function(){
     var id = $(this).attr('id')
     console.log(id)
     $('#infoModal' + id).modal('show')
+})
+
+$('.save_edit').click(function(e){
+    e.preventDefault()
+    $('.edit_record').ajaxSubmit({
+        success: function(r){
+            console.log(r)
+        },
+        error: function(e){
+            console.log(e)
+        }
+    })
+})
+
+$('.delete').click(function(){
+    var conf = confirm('Are you sure you want to delete?')
+    if (conf == true){
+        console.log('delete')
+    }
+    else {
+        console.log('dont delete')
+    }
 })
 
 </script>

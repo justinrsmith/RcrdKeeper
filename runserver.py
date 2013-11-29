@@ -50,8 +50,15 @@ def get_records():
     selection = list(r.table('records').order_by(
                                     'artist').run(g.rdb_conn))
 
+
+    condition = list(r.table('record_condition').run(g.rdb_conn))
+
+    size = list(r.table('record_size').run(g.rdb_conn))
+
     return render_template('records.html',
-                            selection=selection)
+                            selection=selection,
+                            condition=condition,
+                            size=size)
 
 @app.route('/submit', methods=['POST', 'GET'])
 def new_record():
@@ -59,8 +66,8 @@ def new_record():
     records = r.db('rcrdkeeprapp').table('records')
 
     #query for album info
-    album_info = rdio.call('search', {'query': request.form['album'], 'types':
-                                             'album'})
+    album_info = rdio.call('search', {'query': request.form['album'],
+                                         'types': 'album'})
 
     #retrieve album artwork
     for x in album_info['result']['results']:
@@ -85,10 +92,31 @@ def new_record():
                             'album art': album_art,
                             'release_date': release_date,
                             'duration': duration,
-                            'tracks': tracks}]).run(g.rdb_conn)
+                            'tracks': tracks,
+                            'record_condition': '',
+                            'sleeve_condition': '',
+                            'color': '',
+                            'size': '',
+                            'notes': ''}]).run(g.rdb_conn)
 
     return render_template('new_record.html',
                             new_info=new_info)
+
+
+@app.route('/edit', methods=['POST'])
+def edit_record():
+
+    print request.form
+    records = r.db('rcrdkeeprapp').table('records')
+
+    records.get(request.form['id']).update({
+                    'record_condition': request.form['record_condition'],
+                    'sleeve_condition': request.form['sleeve_condition'],
+                    'color': request.form['color'],
+                    'notes': request.form['notes'],
+                    'size' : request.form['size']}).run(g.rdb_conn)
+
+    return ''
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run the Flask todo app')

@@ -8,5 +8,16 @@
 
 .glyphicon {
     position: absolute!important;
-    right: 50px;
+    right: 10px;
+}
+
+#delete_logo {
+    position:absolute;
+}
+
+.delete-wrap {
+    float: right;
+    bottom: 15px;
+    right: 0px;
+    position:absolute;
 }
