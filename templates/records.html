@@ -30,7 +30,7 @@
         <div class="albums row">
             {% for s in selection %}
             <div class="col-md-3">
-                <div class="delete-wrap">
+                <div class="delete-wrap" id="{{ s['id'] }}">
                     <a href="#" class="delete">
                         <span id="delete_logo" class="glyphicon glyphicon-remove"></span>
                     </a>
@@ -86,7 +86,12 @@ $('.save_edit').click(function(e){
 $('.delete').click(function(){
     var conf = confirm('Are you sure you want to delete?')
     if (conf == true){
-        console.log('delete')
+        var record_id = $(this).parents('div:first').attr('id')
+        $(this).parents('div').parents('div:first').remove()
+        $.ajax({
+            url: '/delete/' + record_id,
+            type: 'post'
+        })
     }
     else {
         console.log('dont delete')

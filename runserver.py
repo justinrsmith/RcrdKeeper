@@ -3,6 +3,8 @@ from flask import Flask, g, render_template, request, jsonify, flash
 import os
 import json
 import rethinkdb as r
+#import urllib2
+#import simplejson
 
 from rethinkdb.errors import RqlRuntimeError, RqlDriverError
 
@@ -50,6 +52,10 @@ def get_records():
     selection = list(r.table('records').order_by(
                                     'artist').run(g.rdb_conn))
 
+    #req = urllib2.Request("https://itunes.apple.com/lookup?upc=720642462928")
+    #opener = urllib2.build_opener()
+    #f = opener.open(req)
+    #print f.read()
 
     condition = list(r.table('record_condition').run(g.rdb_conn))
 
@@ -115,6 +121,16 @@ def edit_record():
                     'color': request.form['color'],
                     'notes': request.form['notes'],
                     'size' : request.form['size']}).run(g.rdb_conn)
+
+    return ''
+
+
+@app.route('/delete/<string:record_id>', methods=['POST'])
+def delete_record(record_id=None):
+
+    records = r.db('rcrdkeeprapp').table('records')
+
+    records.get(record_id).delete().run(g.rdb_conn)
 
     return ''
 
