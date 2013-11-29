@@ -62,9 +62,6 @@ def new_record():
     album_info = rdio.call('search', {'query': request.form['album'], 'types':
                                              'album'})
 
-    #album_info_extend = rdio.call('getAlbumsForArtist', {'query':})
-
-    print album_info
     #retrieve album artwork
     for x in album_info['result']['results']:
         if x['artist'] == request.form['artist']:
@@ -72,6 +69,11 @@ def new_record():
             release_date = x['releaseDate']
             duration = x['duration']
             duration = duration/60
+            tracks = x['length']
+            artist_key = x['artistKey']
+
+#    album_info_extend = rdio.call('getAlbumsForArtist', 
+#                                {'query': artist_key, 'artist': artist_key})
 
     new_info = [{'artist': request.form['artist'],
                         'album': request.form['album'],
@@ -82,7 +84,8 @@ def new_record():
                         'album': request.form['album'],
                             'album art': album_art,
                             'release_date': release_date,
-                            'duration': duration}]).run(g.rdb_conn)
+                            'duration': duration,
+                            'tracks': tracks}]).run(g.rdb_conn)
 
     return render_template('new_record.html',
                             new_info=new_info)
