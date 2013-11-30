@@ -36,7 +36,7 @@
                     </a>
                 </div>
                 {{ s['artist'] }} - {{ s['album'] }}
-                <img class="get_details" id="{{ s['id'] }}" src="{{ s['album art'] }}"></img>
+                <img class="get_details" id="{{ s['id'] }}" src="{{ s['album art'] }}" width="200" height="200"></img>
                 <a data-toggle="modal" href="#editModal{{ s['id'] }}">
                 <span class="glyphicon glyphicon-pencil"></span>
                 </a>
@@ -73,7 +73,7 @@ $('.get_details').dblclick(function(){
 
 $('.save_edit').click(function(e){
     e.preventDefault()
-    $('.edit_record').ajaxSubmit({
+    $(this).parents('.edit_record').ajaxSubmit({
         success: function(r){
             console.log(r)
         },

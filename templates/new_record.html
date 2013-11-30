@@ -1,6 +1,9 @@
 {% for s in new_info %}
 <div class="album col-md-3">
     {{ s['artist'] }} - {{ s['album'] }}
-    <img class="details" src="{{ s['album art'] }}"></img>
+    <img class="get_details" id="{{ s['id'] }}" src="{{ s['album art'] }}" width="200" height="200"></img>
+                <a data-toggle="modal" href="#editModal{{ s['id'] }}">
+                <span class="glyphicon glyphicon-pencil"></span>
+                </a>
 </div>
 {% endfor %}
