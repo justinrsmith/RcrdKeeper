@@ -3,15 +3,11 @@ from flask import Flask, g, render_template, request, jsonify, flash
 import os
 import json
 import rethinkdb as r
-#import urllib2
-#import simplejson
 
 from rethinkdb.errors import RqlRuntimeError, RqlDriverError
 
 from rdio import Rdio
 rdio = Rdio(('zq33ap8e526smhskzx7xkghf', 'rudg3ASW2T'))
-#RDB_HOST =  os.environ.get('localhost')
-#RDB_PORT = os.environ.get(28015) 
 RCRDKEEPR_DB = 'rcrdkeeprapp'
 
 
@@ -52,14 +48,11 @@ def get_records():
     selection = list(r.table('records').order_by(
                                     'artist').run(g.rdb_conn))
 
-    #req = urllib2.Request("https://itunes.apple.com/lookup?upc=720642462928")
-    #opener = urllib2.build_opener()
-    #f = opener.open(req)
-    #print f.read()
+    condition = list(r.table('record_condition').order_by(
+                                    'order').run(g.rdb_conn))
 
-    condition = list(r.table('record_condition').run(g.rdb_conn))
-
-    size = list(r.table('record_size').run(g.rdb_conn))
+    size = list(r.table('record_size').order_by(
+                                    'order').run(g.rdb_conn))
 
     return render_template('records.html',
                             selection=selection,
@@ -80,8 +73,7 @@ def edit_record():
 
     new_info = query(request.form, 'edit')
 
-    return render_template('new_record.html',
-                            new_info=new_info)
+    return new_info['album art']
 
 
 @app.route('/delete/<string:record_id>', methods=['POST'])
@@ -93,14 +85,13 @@ def delete_record(record_id=None):
 
     return ''
 
+
 def query(form, query_type):
 
     records = r.db('rcrdkeeprapp').table('records')
 
     album_info = rdio.call('search', {'query': form['album'],
                                          'types': 'album'})
-
-    print album_info
 
     if album_info['result']['number_results'] != 0:
         for x in album_info['result']['results']:
@@ -155,14 +146,13 @@ def query(form, query_type):
                         'color': form['color'],
                         'notes': form['notes'],
                         'size' : form['size']}).run(g.rdb_conn)
-        return [{'artist': form['artist'],
+        return {'artist': form['artist'],
                         'album': form['album'],
-                            'album art': album_art}]
+                            'album art': album_art}
     else:
         print 'failure'
 
         
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run the Flask todo app')
     parser.add_argument('--setup', dest='run_setup', action='store_true')
