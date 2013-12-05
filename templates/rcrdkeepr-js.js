@@ -49,3 +49,36 @@ $('.delete').click(function(){
         console.log('dont delete')
     }
 })
+
+$(document).ready(function(){
+    $('#record_search').select2({ maximumSelectionSize: 1 }) 
+})
+
+
+$('.search').click(function(){
+    var artist = $('#record_search option:selected').val()
+    $.get('/get_records/' + artist, function(data){
+        console.log('succ')
+        console.log(data)
+        $('.albums').empty()
+        $('.albums').append(data)
+    })
+})
+
+
+/*
+var test
+$('#record_search').click(function(){
+    $.get('/get_albums', function(data){
+        test = ['album', 'albumalbum', 'cheese', 'chex', 'test']
+        console.log(test)    
+    })
+})
+
+
+$('#record_search').typeahead({                                
+    name: 'countries',
+    //prefetch: test                                                  
+    local: test//['album', 'albumalbum', 'cheese', 'chex', 'test']   
+
+})*/

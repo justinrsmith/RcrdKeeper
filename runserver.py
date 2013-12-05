@@ -43,10 +43,14 @@ def before_request():
 #        pass
 
 
-@app.route('/records', methods=['GET'])
-def get_records():
+@app.route('/', methods=['GET'])
+def home():
+
+    artist = list(r.table('records').pluck('artist').distinct().run(g.rdb_conn))
+
+
     selection = list(r.table('records').order_by(
-                                    'artist').run(g.rdb_conn))
+                                'artist').run(g.rdb_conn))
 
     condition = list(r.table('record_condition').order_by(
                                     'order').run(g.rdb_conn))
@@ -54,10 +58,25 @@ def get_records():
     size = list(r.table('record_size').order_by(
                                     'order').run(g.rdb_conn))
 
-    return render_template('records.html',
+    return render_template('home.html',
+                            artist=artist,
                             selection=selection,
                             condition=condition,
                             size=size)
+
+@app.route('/get_records/<string:artist>', methods=['GET'])
+def get_records(artist):
+
+    print artist
+
+    selection = list(r.table('records').filter({'artist':artist}).order_by(
+                                'artist').run(g.rdb_conn))
+
+    for s in selection:
+        print s['artist']
+
+    return render_template('records.html',
+                            selection=selection)
 
 @app.route('/submit', methods=['POST', 'GET'])
 def new_record():
@@ -85,6 +104,12 @@ def delete_record(record_id=None):
 
     return ''
 
+@app.route('/get_albums', methods=['GET'])
+def get_albums():
+
+    test = ['a', 'b']
+
+    return jsonify(test2=test)
 
 def query(form, query_type):
 

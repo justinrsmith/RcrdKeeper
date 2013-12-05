@@ -8,7 +8,7 @@
 
 .glyphicon {
     position: absolute!important;
-    right: 10px;
+    right: 60px;
 }
 
 #delete_logo {
@@ -20,4 +20,8 @@
     bottom: 15px;
     right: 0px;
     position:absolute;
+}
+
+.select2-container {
+  width: 250px;
 }
