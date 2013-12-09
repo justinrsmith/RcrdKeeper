@@ -1,9 +1,8 @@
 import argparse
-from flask import Flask, g, render_template, request, jsonify, flash
+from flask import Flask, g, render_template, request, jsonify, flash, session, redirect, abort
 import os
 import json
 import rethinkdb as r
-
 from rethinkdb.errors import RqlRuntimeError, RqlDriverError
 
 from rdio import Rdio
@@ -35,6 +34,8 @@ def before_request():
     except RqlDriverError:
         abort(503, "No database connection could be established.")
 
+    g.user = '7f0415cb-49d7-421b-9eeb-8f9a0fbb94f6'
+
 #@app.teardown_request
 #def teardown_request(exception):
 #    try:
@@ -42,15 +43,66 @@ def before_request():
 #    except AttributeError:
 #        pass
 
+@app.route('/register', methods=['POST'])
+def register():
+
+    users = r.db('rcrdkeeprapp').table('users')
+
+    users.insert({'username': request.form['username'],
+                  'password': request.form['password']}).run(g.rdb_conn)
+
+    return redirect('/login')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+
+    users = r.db('rcrdkeeprapp').table('users')
+    error = None
+
+    if request.method == 'POST':
+        cursor = users.filter(r.row['username'] == request.form['username']
+                                                            ).run(g.rdb_conn)
+        for c in cursor:
+
+            username = c['username']
+            password = c['password']
+            session['user'] = c['id']
+
+        if not 'username' in locals():
+            username = None
+            password = None
+
+        if request.form['username'] != username:
+            error = 'Invalid username'
+        elif request.form['password'] != password:
+            error = 'Invalid password'
+        else:
+            session['logged_in'] = True
+            
+            flash('You were logged in')
+            return redirect('/')
+    return render_template('login.html', error=error)
+
+@app.route('/logout')
+def logout():
+
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect('/login')
 
 @app.route('/', methods=['GET'])
 def home():
 
-    artist = list(r.table('records').pluck('artist').distinct().run(g.rdb_conn))
+    if not session.get('logged_in'):
+        abort(401)
 
+    print g.user
 
-    selection = list(r.table('records').order_by(
-                                'artist').run(g.rdb_conn))
+    artist = list(r.table('records').pluck('artist').filter({
+                        'user':g.user}).distinct().run(g.rdb_conn))
+
+    selection = list(r.table('records').filter(
+        {'user':g.user}).order_by('artist').run(g.rdb_conn))
 
     condition = list(r.table('record_condition').order_by(
                                     'order').run(g.rdb_conn))
@@ -67,13 +119,8 @@ def home():
 @app.route('/get_records/<string:artist>', methods=['GET'])
 def get_records(artist):
 
-    print artist
-
-    selection = list(r.table('records').filter({'artist':artist}).order_by(
-                                'artist').run(g.rdb_conn))
-
-    for s in selection:
-        print s['artist']
+    selection = list(r.table('records').filter(
+        {'artist':artist, 'user':g.user}).order_by('artist').run(g.rdb_conn))
 
     return render_template('records.html',
                             selection=selection)
@@ -143,8 +190,10 @@ def query(form, query_type):
         artist_key = ''
 
     if query_type == 'insert':
-        succ = records.insert([{'artist': form['artist'],
-                            'album': form['album'],
+        print 'insert'
+        succ = records.insert([{'user': g.user,
+                                'artist': form['artist'],
+                                'album': form['album'],
                                 'album art': album_art,
                                 'release_date': release_date,
                                 'duration': duration,
@@ -159,18 +208,20 @@ def query(form, query_type):
                         'album': form['album'],
                             'album art': album_art}]
     elif query_type == 'edit':
+        print 'edit'
         records.get(request.form['id']).update({
-                        'artist': form['artist'],
-                        'album': form['album'],
-                        'album art': album_art,
-                        'release_date': release_date,
-                        'duration': duration,
-                        'tracks': tracks,
-                        'record_condition': form['record_condition'],
-                        'sleeve_condition': form['sleeve_condition'],
-                        'color': form['color'],
-                        'notes': form['notes'],
-                        'size' : form['size']}).run(g.rdb_conn)
+                                        'user': g.user,
+                                        'artist': form['artist'],
+                                        'album': form['album'],
+                                        'album art': album_art,
+                                        'release_date': release_date,
+                                        'duration': duration,
+                                        'tracks': tracks,
+                                        'record_condition': form['record_condition'],
+                                        'sleeve_condition': form['sleeve_condition'],
+                                        'color': form['color'],
+                                        'notes': form['notes'],
+                                        'size' : form['size']}).run(g.rdb_conn)
         return {'artist': form['artist'],
                         'album': form['album'],
                             'album art': album_art}

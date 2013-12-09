@@ -1,8 +1,8 @@
 $('.sub').click(function(e){
     e.preventDefault()
+    console.log('hi')
     $('.new_record').ajaxSubmit({
         success: function(r){
-            console.log(r)
             $('.albums').append(r)
             $('.messages').addClass('alert alert-success alert-dismissable')
             $('.messages').append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Record Successfully Added')
@@ -58,27 +58,13 @@ $(document).ready(function(){
 $('.search').click(function(){
     var artist = $('#record_search option:selected').val()
     $.get('/get_records/' + artist, function(data){
-        console.log('succ')
-        console.log(data)
         $('.albums').empty()
         $('.albums').append(data)
     })
 })
 
-
 /*
-var test
-$('#record_search').click(function(){
-    $.get('/get_albums', function(data){
-        test = ['album', 'albumalbum', 'cheese', 'chex', 'test']
-        console.log(test)    
-    })
+$('#artist').keyup(function(){
+    console.log($(this).val())
 })
-
-
-$('#record_search').typeahead({                                
-    name: 'countries',
-    //prefetch: test                                                  
-    local: test//['album', 'albumalbum', 'cheese', 'chex', 'test']   
-
-})*/
+*/
