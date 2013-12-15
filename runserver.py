@@ -4,6 +4,11 @@ import os
 import json
 import rethinkdb as r
 from rethinkdb.errors import RqlRuntimeError, RqlDriverError
+from flask.ext.mail import Message, Mail
+import config
+#from emails import send_email
+import emails
+
 
 from rdio import Rdio
 rdio = Rdio(('zq33ap8e526smhskzx7xkghf', 'rudg3ASW2T'))
@@ -26,6 +31,18 @@ app = Flask(__name__)
 app.secret_key = 'some_secret'
 app.config.from_object(__name__)
 
+app.config.update(
+    DEBUG = True,
+    MAIL_SERVER = 'smtp.gmail.com',
+    MAIL_PORT = 465,
+    #MAIL_USE_TLS = False,
+    MAIL_USE_SSL = True,
+    MAIL_USERNAME = 'flasktesting33@gmail.com',
+    MAIL_PASSWORD = 'testpw2013'
+)
+
+
+mail = Mail(app)
 
 @app.before_request
 def before_request():
@@ -34,7 +51,8 @@ def before_request():
     except RqlDriverError:
         abort(503, "No database connection could be established.")
 
-    g.user = '7f0415cb-49d7-421b-9eeb-8f9a0fbb94f6'
+    if 'user' in session:
+        g.user = session['user']
 
 #@app.teardown_request
 #def teardown_request(exception):
@@ -46,12 +64,21 @@ def before_request():
 @app.route('/register', methods=['POST'])
 def register():
 
-    users = r.db('rcrdkeeprapp').table('users')
+    if request.method == 'POST':
+        users = r.db('rcrdkeeprapp').table('users')
 
-    users.insert({'username': request.form['username'],
-                  'password': request.form['password']}).run(g.rdb_conn)
+        response = users.insert({'email': request.form['email'],
+                      'password': request.form['register_password'],
+                      'birthdate': request.form['birthdate']}).run(g.rdb_conn)
 
-    return redirect('/login')
+        email_message = "Thank you for registering."
+
+        if response['inserted'] == 1:
+            emails.send_email('RcrdKeepr Registration Confirmation','flasktesting33@gmail.com',
+                                'justinrsmith88@gmail.com', email_message)
+     
+        return redirect('/login')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -60,20 +87,21 @@ def login():
     error = None
 
     if request.method == 'POST':
-        cursor = users.filter(r.row['username'] == request.form['username']
+
+        cursor = users.filter(r.row['email'] == request.form['email']
                                                             ).run(g.rdb_conn)
         for c in cursor:
 
-            username = c['username']
+            email = c['email']
             password = c['password']
             session['user'] = c['id']
 
-        if not 'username' in locals():
-            username = None
+        if not 'email' in locals():
+            email = None
             password = None
 
-        if request.form['username'] != username:
-            error = 'Invalid username'
+        if request.form['email'] != email:
+            error = 'Invalid email'
         elif request.form['password'] != password:
             error = 'Invalid password'
         else:
@@ -87,6 +115,7 @@ def login():
 def logout():
 
     session.pop('logged_in', None)
+    session.pop('user', None)
     flash('You were logged out')
     return redirect('/login')
 
@@ -95,8 +124,6 @@ def home():
 
     if not session.get('logged_in'):
         abort(401)
-
-    print g.user
 
     artist = list(r.table('records').pluck('artist').filter({
                         'user':g.user}).distinct().run(g.rdb_conn))
@@ -157,6 +184,33 @@ def get_albums():
     test = ['a', 'b']
 
     return jsonify(test2=test)
+
+
+@app.route('/forgot', methods=['POST'])
+def forgot():
+
+    print request.form
+
+    if request.method == 'POST':
+
+        email_exist = r.table('users').filter({
+            'email': request.form['email']}).run(g.rdb_conn)
+
+        print email_exist
+        if email_exist:
+            print 'hi'
+            for e in email_exist:
+                print e
+        else:
+            print 'nada'
+
+        email_message = "Forgotten password"
+
+        #if response['inserted'] == 1:
+        emails.send_email('RcrdKeepr Password Recovery','flasktesting33@gmail.com',
+                            'justinrsmith88@gmail.com', email_message)
+        
+    return ''
 
 def query(form, query_type):
 

@@ -63,6 +63,43 @@ $('.search').click(function(){
     })
 })
 
+$('.register').click(function(){
+        //$("#submit").click(function(){
+        //$(".error").hide();
+        console.log($("#register_password").val())
+        var hasError = false;
+        var passwordVal = $("#register_password").val();
+        var checkVal = $("#verify_password").val();
+        if (passwordVal == '') {
+            $("#register_password").after('<span class="error">Please enter a password.</span>');
+            hasError = true;
+        } else if (checkVal == '') {
+            $("#verify_password").after('<span class="error">Please re-enter your password.</span>');
+            hasError = true;
+        } else if (passwordVal != checkVal ) {
+            $("#verify_password").after('<span class="error">Passwords do not match.</span>');
+            hasError = true;
+        }
+        if(hasError == true) {return false;}
+    });
+
+$(function (){
+    $("#example").popover()
+})
+
+$(document).on('click', '.forgot_pw', function(e){
+    e.preventDefault()
+    var email = {'email': $('#forgot_email').val()}
+
+    $.ajax({
+        url: '/forgot',
+        type: 'POST',
+        data: email,
+        success: function(){
+            console.log('did it')
+        }
+    })
+})
 /*
 $('#artist').keyup(function(){
     console.log($(this).val())
