@@ -63,25 +63,33 @@ $('.search').click(function(){
     })
 })
 
-$('.register').click(function(){
-        //$("#submit").click(function(){
-        //$(".error").hide();
-        console.log($("#register_password").val())
-        var hasError = false;
-        var passwordVal = $("#register_password").val();
-        var checkVal = $("#verify_password").val();
+$(document).on('click', '.register', function(e){
+        var hasError = false
+        var passwordVal = $('#register_password').val()
+        var checkVal = $('#verify_password').val()
+        var pattern = new RegExp(/^[+a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i)
+        var email = $(this).parent().siblings().children('.email').children('input')
+        var valid_email = pattern.test(email.val())
+        var form = $(this).parent('div').attr('id')
+        console.log(form)
+
+        $('.error').hide()
         if (passwordVal == '') {
-            $("#register_password").after('<span class="error">Please enter a password.</span>');
-            hasError = true;
+            $('#register_password').after('<span class="error">Please enter a password.</span>')
+            hasError = true
         } else if (checkVal == '') {
-            $("#verify_password").after('<span class="error">Please re-enter your password.</span>');
-            hasError = true;
-        } else if (passwordVal != checkVal ) {
-            $("#verify_password").after('<span class="error">Passwords do not match.</span>');
-            hasError = true;
+            $('#verify_password').after('<span class="error">Please re-enter your password.</span>')
+            hasError = true
+        } else if (passwordVal != checkVal) {
+            $('#verify_password').after('<span class="error">Passwords do not match.</span>')
+            hasError = true
+        } else if (valid_email != true && form != 'reset_register') {
+            console.log('hi')
+            $(email).after('<span class="error">Please enter a valid email.</span>')
+            hasError = true
         }
-        if(hasError == true) {return false;}
-    });
+        if(hasError == true) {return false}
+    })
 
 $(function (){
     $("#example").popover()
@@ -100,8 +108,3 @@ $(document).on('click', '.forgot_pw', function(e){
         }
     })
 })
-/*
-$('#artist').keyup(function(){
-    console.log($(this).val())
-})
-*/

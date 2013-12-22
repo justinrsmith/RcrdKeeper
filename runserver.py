@@ -6,8 +6,9 @@ import rethinkdb as r
 from rethinkdb.errors import RqlRuntimeError, RqlDriverError
 from flask.ext.mail import Message, Mail
 import config
-#from emails import send_email
 import emails
+from werkzeug.security import generate_password_hash, check_password_hash
+import hashlib
 
 
 from rdio import Rdio
@@ -35,7 +36,6 @@ app.config.update(
     DEBUG = True,
     MAIL_SERVER = 'smtp.gmail.com',
     MAIL_PORT = 465,
-    #MAIL_USE_TLS = False,
     MAIL_USE_SSL = True,
     MAIL_USERNAME = 'flasktesting33@gmail.com',
     MAIL_PASSWORD = 'testpw2013'
@@ -43,6 +43,9 @@ app.config.update(
 
 
 mail = Mail(app)
+
+users = r.db('rcrdkeeprapp').table('users')
+records = r.db('rcrdkeeprapp').table('records')
 
 @app.before_request
 def before_request():
@@ -64,45 +67,59 @@ def before_request():
 @app.route('/register', methods=['POST'])
 def register():
 
+    error = None
+
     if request.method == 'POST':
-        users = r.db('rcrdkeeprapp').table('users')
 
-        response = users.insert({'email': request.form['email'],
-                      'password': request.form['register_password'],
-                      'birthdate': request.form['birthdate']}).run(g.rdb_conn)
+        user_exist = list(users.filter({'email': request.form['email']}).run(g.rdb_conn))
 
-        email_message = "Thank you for registering."
+        if user_exist:
+            error = "Account with this email already exist. \
+            Click 'forgot password' to recover your account."
+        else:
+            hash_pw = generate_password_hash(request.form['register_password'])
 
-        if response['inserted'] == 1:
-            emails.send_email('RcrdKeepr Registration Confirmation','flasktesting33@gmail.com',
-                                'justinrsmith88@gmail.com', email_message)
-     
-        return redirect('/login')
+            response = users.insert({'email': request.form['email'],
+                          'password': hash_pw,
+                          'birthdate': request.form['birthdate'],
+                          'key': None}).run(g.rdb_conn)
+
+            email_message = "Thank you for registering with RcrdKeepr."
+
+            if response['inserted'] == 1:
+                emails.send_email('RcrdKeepr Registration Confirmation','flasktesting33@gmail.com',
+                                    request.form['email'], email_message)
+         
+        return render_template('login.html', error=error)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
-    users = r.db('rcrdkeeprapp').table('users')
     error = None
 
     if request.method == 'POST':
 
         cursor = users.filter(r.row['email'] == request.form['email']
                                                             ).run(g.rdb_conn)
+
         for c in cursor:
 
             email = c['email']
             password = c['password']
             session['user'] = c['id']
 
+        
+
         if not 'email' in locals():
             email = None
             password = None
+        else:
+            valid_password = check_password_hash(password, request.form['password'])
 
         if request.form['email'] != email:
             error = 'Invalid email'
-        elif request.form['password'] != password:
+        elif not valid_password:
             error = 'Invalid password'
         else:
             session['logged_in'] = True
@@ -124,11 +141,11 @@ def home():
 
     if not session.get('logged_in'):
         abort(401)
-
-    artist = list(r.table('records').pluck('artist').filter({
+    print g.user
+    artist = list(records.pluck('artist').filter({
                         'user':g.user}).distinct().run(g.rdb_conn))
 
-    selection = list(r.table('records').filter(
+    selection = list(records.filter(
         {'user':g.user}).order_by('artist').run(g.rdb_conn))
 
     condition = list(r.table('record_condition').order_by(
@@ -146,7 +163,7 @@ def home():
 @app.route('/get_records/<string:artist>', methods=['GET'])
 def get_records(artist):
 
-    selection = list(r.table('records').filter(
+    selection = list(records.filter(
         {'artist':artist, 'user':g.user}).order_by('artist').run(g.rdb_conn))
 
     return render_template('records.html',
@@ -172,8 +189,6 @@ def edit_record():
 @app.route('/delete/<string:record_id>', methods=['POST'])
 def delete_record(record_id=None):
 
-    records = r.db('rcrdkeeprapp').table('records')
-
     records.get(record_id).delete().run(g.rdb_conn)
 
     return ''
@@ -189,39 +204,52 @@ def get_albums():
 @app.route('/forgot', methods=['POST'])
 def forgot():
 
-    print request.form
-
     if request.method == 'POST':
 
-        email_exist = r.table('users').filter({
-            'email': request.form['email']}).run(g.rdb_conn)
+        email_exist = list(users.filter({
+            'email': request.form['email']}).run(g.rdb_conn)).pop()
 
-        print email_exist
         if email_exist:
-            print 'hi'
-            for e in email_exist:
-                print e
-        else:
-            print 'nada'
-
-        email_message = "Forgotten password"
-
-        #if response['inserted'] == 1:
-        emails.send_email('RcrdKeepr Password Recovery','flasktesting33@gmail.com',
-                            'justinrsmith88@gmail.com', email_message)
+            key = hashlib.md5(email_exist['id']).hexdigest()
+            
+            users.get(email_exist['id']).update({'key': key}).run(g.rdb_conn)
         
+            email_message = 'Follow the below link to reset 10.0.0.8:4000/reset/' + key
+
+            emails.send_email('RcrdKeepr Account Recovery','flasktesting33@gmail.com',
+                                email_exist['email'], email_message)
+
     return ''
 
-def query(form, query_type):
+@app.route('/reset', methods=['POST'])
+@app.route('/reset/<string:key>', methods=['POST', 'GET'])
+def reset(key=None):
 
-    records = r.db('rcrdkeeprapp').table('records')
+    print 'hihihi'
+    if key:
+        user = list(users.filter({'key': key}).run(g.rdb_conn)).pop()
+        session['user'] = user['id']
+
+    print request.method
+    if request.method == 'POST':
+        hash_pw = generate_password_hash(request.form['verify_password'])
+        users.get(session['user']).update({
+            'password': hash_pw, 'key': None}).run(g.rdb_conn)
+        session['logged_in'] = True
+
+        return redirect('/')
+
+    return render_template('reset.html')
+
+
+def query(form, query_type):
 
     album_info = rdio.call('search', {'query': form['album'],
                                          'types': 'album'})
 
     if album_info['result']['number_results'] != 0:
         for x in album_info['result']['results']:
-            print 'for'
+
             if x['artist'] == form['artist']:
                 album_art = x['icon']
                 release_date = x['releaseDate']
@@ -244,7 +272,6 @@ def query(form, query_type):
         artist_key = ''
 
     if query_type == 'insert':
-        print 'insert'
         succ = records.insert([{'user': g.user,
                                 'artist': form['artist'],
                                 'album': form['album'],
@@ -262,7 +289,6 @@ def query(form, query_type):
                         'album': form['album'],
                             'album art': album_art}]
     elif query_type == 'edit':
-        print 'edit'
         records.get(request.form['id']).update({
                                         'user': g.user,
                                         'artist': form['artist'],
@@ -291,4 +317,4 @@ if __name__ == "__main__":
     if args.run_setup:
         dbSetup()
     else:
-        app.run(host='localhost', debug=True)
+        app.run(host='10.0.0.8', port=4000, debug=True)
