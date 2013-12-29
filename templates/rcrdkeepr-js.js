@@ -3,6 +3,7 @@ $('.sub').click(function(e){
     console.log('hi')
     $('.new_record').ajaxSubmit({
         success: function(r){
+            console.log(r)
             $('.albums').append(r)
             $('.messages').addClass('alert alert-success alert-dismissable')
             $('.messages').append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Record Successfully Added')
@@ -13,7 +14,7 @@ $('.sub').click(function(e){
     })
 })
 
-$('.get_details').dblclick(function(){
+$(document).on('dblclick', '.get_details', function(){
     var id = $(this).attr('id')
     $('#infoModal' + id).modal('show')
 })

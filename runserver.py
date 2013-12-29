@@ -167,15 +167,26 @@ def get_records(artist):
         {'artist':artist, 'user':g.user}).order_by('artist').run(g.rdb_conn))
 
     return render_template('records.html',
-                            selection=selection)
+                            size=size)
+
 
 @app.route('/submit', methods=['POST', 'GET'])
 def new_record():
 
-    new_info = query(request.form, 'insert')
+    new_info = list(query(request.form, 'insert'))
 
+    condition = list(r.table('record_condition').order_by(
+                                    'order').run(g.rdb_conn))
+
+    size = list(r.table('record_size').order_by(
+                                    'order').run(g.rdb_conn))
+
+    print new_info
+    #print new_info['id']
     return render_template('new_record.html',
-                            new_info=new_info)
+                            new_info=new_info,
+                            condition=condition,
+                            size=size)
 
 
 @app.route('/edit', methods=['POST'])
@@ -285,11 +296,14 @@ def query(form, query_type):
                                 'size': '',
                                 'notes': ''}]).run(g.rdb_conn)
 
-        return [{'artist': form['artist'],
-                        'album': form['album'],
-                            'album art': album_art}]
+        print succ
+
+        selection = records.get(succ['generated_keys'][0]).run(g.rdb_conn)
+        print selection
+        #return selection
+        return selection
     elif query_type == 'edit':
-        records.get(request.form['id']).update({
+        records.get(form['id']).update({
                                         'user': g.user,
                                         'artist': form['artist'],
                                         'album': form['album'],
