@@ -173,7 +173,7 @@ def get_records(artist):
 @app.route('/submit', methods=['POST', 'GET'])
 def new_record():
 
-    new_info = list(query(request.form, 'insert'))
+    new_info = query(request.form, 'insert')
 
     condition = list(r.table('record_condition').order_by(
                                     'order').run(g.rdb_conn))
@@ -181,10 +181,11 @@ def new_record():
     size = list(r.table('record_size').order_by(
                                     'order').run(g.rdb_conn))
 
-    print new_info
-    #print new_info['id']
+    record = records.get(new_info).run(g.rdb_conn)
+
+
     return render_template('new_record.html',
-                            new_info=new_info,
+                            s=record,
                             condition=condition,
                             size=size)
 
@@ -296,12 +297,12 @@ def query(form, query_type):
                                 'size': '',
                                 'notes': ''}]).run(g.rdb_conn)
 
-        print succ
+        print succ['generated_keys'][0]
 
         selection = records.get(succ['generated_keys'][0]).run(g.rdb_conn)
-        print selection
+        #print selection
         #return selection
-        return selection
+        return succ['generated_keys'][0]
     elif query_type == 'edit':
         records.get(form['id']).update({
                                         'user': g.user,
@@ -331,4 +332,4 @@ if __name__ == "__main__":
     if args.run_setup:
         dbSetup()
     else:
-        app.run(host='10.0.0.8', port=4000, debug=True)
+        app.run(host='localhost', port=4000, debug=True)
