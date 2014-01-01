@@ -15,11 +15,12 @@
     position:absolute;
 }
 
-.delete-wrap {
+.delete_wrap {
     float: right;
     bottom: 15px;
     right: 0px;
-    position:absolute;
+    position: absolute;
+    margin-bottom: 10px;
 }
 
 .select2-container {
@@ -32,5 +33,9 @@
 
 .or {
     padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.album_row {
     padding-bottom: 10px;
 }

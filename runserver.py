@@ -141,9 +141,9 @@ def home():
 
     if not session.get('logged_in'):
         abort(401)
-    print g.user
-    artist = list(records.pluck('artist').filter({
-                        'user':g.user}).distinct().run(g.rdb_conn))
+
+    artist = records.filter({
+                        'user':g.user}).run(g.rdb_conn)
 
     selection = list(records.filter(
         {'user':g.user}).order_by('artist').run(g.rdb_conn))
@@ -167,7 +167,7 @@ def get_records(artist):
         {'artist':artist, 'user':g.user}).order_by('artist').run(g.rdb_conn))
 
     return render_template('records.html',
-                            size=size)
+                            selection=selection)
 
 
 @app.route('/submit', methods=['POST', 'GET'])
@@ -183,7 +183,6 @@ def new_record():
 
     record = records.get(new_info).run(g.rdb_conn)
 
-
     return render_template('new_record.html',
                             s=record,
                             condition=condition,
@@ -195,7 +194,9 @@ def edit_record():
 
     new_info = query(request.form, 'edit')
 
-    return new_info['album art']
+    print new_info
+
+    return redirect('/')
 
 
 @app.route('/delete/<string:record_id>', methods=['POST'])
@@ -207,6 +208,8 @@ def delete_record(record_id=None):
 
 @app.route('/get_albums', methods=['GET'])
 def get_albums():
+
+    print request.form
 
     test = ['a', 'b']
 
@@ -252,6 +255,7 @@ def reset(key=None):
         return redirect('/')
 
     return render_template('reset.html')
+
 
 
 def query(form, query_type):

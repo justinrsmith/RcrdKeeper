@@ -44,7 +44,8 @@ $('.delete').click(function(){
             type: 'post'
         })
         $('.messages').addClass('alert alert-success alert-dismissable')
-            $('.messages').append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Record Successfully Deleted')
+        $('.messages').empty()
+        $('.messages').append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Record Successfully Deleted')
     }
     else {
         console.log('dont delete')
@@ -106,6 +107,24 @@ $(document).on('click', '.forgot_pw', function(e){
         data: email,
         success: function(){
             console.log('did it')
+        }
+    })
+})
+/*
+$(document).ready(function(){
+     $('#album').select2({ maximumSelectionSize: 1 })
+})
+*/
+$('#artist').blur(function(){
+    console.log($(this).val())
+    var artist = {'artist': $(this).val}
+
+    $.ajax({
+        url: '/get_albums',
+        type: 'GET',
+        data: artist,
+        success: function(d){
+            console.log(d)
         }
     })
 })

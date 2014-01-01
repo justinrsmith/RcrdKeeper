@@ -1,15 +1,15 @@
 {% for s in selection %}
-<div class="col-md-3">
-    <div class="delete-wrap" id="{{ s['id'] }}">
-        <a href="#" class="delete">
-            <span id="delete_logo" class="glyphicon glyphicon-remove"></span>
-        </a>
-    </div>
-    <img class="get_details {{ s['id'] }}" id="{{ s['id'] }}" src="{{ s['album art'] }}" width="200" height="200" data-toggle="tooltip" data-placement="bottom" title='{{ s.artist }} - {{ s.album }}'></img>
-    <a data-toggle="modal" href="#editModal{{ s['id'] }}">
-    <span class="glyphicon glyphicon-pencil"></span>
-    </a>
-</div>
-{% include 'modals.html' %}
+	<div class="col-md-3 album_row">
+	    <div class="delete_wrap" id="{{ s['id'] }}">
+	        <a href="#" class="delete">
+	            <span id="delete_logo" class="glyphicon glyphicon-remove"></span>
+	        </a>
+	    </div>
+	    <img class="get_details {{ s['id'] }}" id="{{ s['id'] }}" src="{{ s['album art'] }}" width="200" height="200" data-toggle="tooltip" data-placement="bottom" title='{{ s.artist }} - {{ s.album }}'></img>
+	    <a data-toggle="modal" href="#editModal{{ s['id'] }}">
+	    <span class="glyphicon glyphicon-pencil"></span>
+	    </a>
+	</div>
+	{% include 'modals.html' %}
 {% endfor %}
 
