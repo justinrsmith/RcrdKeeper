@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <script>
+        $(document).ready(function(){
+            $('#logout').hide()
+        })
+    </script>
+
+    {% if error %}
+        <div class="alert alert-danger">
+             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <p class=error>
+                <strong>Error:</strong> {{ error }}
+        </div>
+    {% endif %}
+
+    <div class="col-md-6 col-md-offset-3 well">
+        <form class="form" action='/reset' method="post">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3">
+                    <input type="password" id="register_password" name="register_password" class="form-control" placeholder="New Password" autofocus><br>
+                    <input type="password" id="verify_password" name="verify_password" class="form-control" placeholder="Verify Password">
+                </div>
+            </div>
+            <div class="row">
+                <div id="reset_register" class="login_control col-xs-1 col-md-2 pull-right">
+                    <button type="submit" class="register btn btn-large btn-danger pull-right">Reset</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

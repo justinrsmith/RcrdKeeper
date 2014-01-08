@@ -1,5 +1,6 @@
 from flask import Flask
-import os
+import os	
+from flask.ext.mail import Mail
 
 app = Flask(__name__)
 app.secret_key = 'some_secret'
@@ -13,3 +14,7 @@ app.config.update(
     MAIL_USERNAME = 'flasktesting33@gmail.com',
     MAIL_PASSWORD = 'testpw2013'
 )
+
+mail = Mail(app)
+
+from rcrdkeepr import views
