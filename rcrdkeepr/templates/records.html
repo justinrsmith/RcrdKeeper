@@ -5,7 +5,14 @@
 	            <span id="delete_logo" class="glyphicon glyphicon-remove"></span>
 	        </a>
 	    </div>
-	    <img class="get_details {{ s['id'] }}" id="{{ s['id'] }}" src="{{ s['album art'] }}" width="200" height="200" data-toggle="tooltip" data-placement="top" title='{{ s.artist }} - {{ s.album }}'></img>
+	    <img class="get_details {{ s['id'] }}" id="{{ s['id'] }}"
+	    src="
+	    {% if s['user_artwork'] == '' %}
+	    	{{ s['album art'] }}
+	    {% else %}
+	    	{{ s['user_artwork'] }}
+	    {% endif %} " 
+	    width="200" height="200" data-toggle="tooltip" data-placement="top" title='{{ s.artist }} - {{ s.album }}'></img>
 	    <a data-toggle="modal" href="#editModal{{ s['id'] }}">
 	    <span class="glyphicon glyphicon-pencil"></span>
 	    </a>

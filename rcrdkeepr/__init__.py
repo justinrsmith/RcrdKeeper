@@ -2,8 +2,12 @@ from flask import Flask
 import os	
 from flask.ext.mail import Mail
 
+UPLOAD_FOLDER = 'rcrdkeepr/static/user_albums/'
+
+
 app = Flask(__name__)
 app.secret_key = 'some_secret'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config.from_object(__name__)
 
 app.config.update(

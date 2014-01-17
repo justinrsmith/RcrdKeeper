@@ -43,3 +43,16 @@
 .page-header {
     margin: 10px 0 20px;
 }
+
+.input_data {
+    padding-top: 10px;
+}
+
+.panel-default>.panel-heading {
+    background-color: #cee2f8;
+    border-color: none;
+}
+
+.panel-default {
+    margin-bottom: 50px;
+}

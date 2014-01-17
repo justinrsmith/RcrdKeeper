@@ -8,12 +8,15 @@ import config
 import emails
 from werkzeug.security import generate_password_hash, check_password_hash
 import hashlib
+from werkzeug import secure_filename
+import os
 
 
 from rdio import Rdio
 rdio = Rdio(('zq33ap8e526smhskzx7xkghf', 'rudg3ASW2T'))
 RCRDKEEPR_DB = 'rcrdkeeprapp'
 
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 def dbSetup():
     connection = r.connect(host='localhost', port=28015)
@@ -32,7 +35,6 @@ records = r.db('rcrdkeeprapp').table('records')
 
 @app.before_request
 def before_request():
-    print 'hi'
     try:
         g.rdb_conn = r.connect(host='localhost', port=28015, db=RCRDKEEPR_DB)
     except RqlDriverError:
@@ -147,7 +149,6 @@ def home(page=1):
     if page == 1:
         status_prev = 'disabled'
 
-
     condition = list(r.table('record_condition').order_by(
                                     'order').run(g.rdb_conn))
 
@@ -201,7 +202,7 @@ def edit_record():
 
     print new_info
 
-    return redirect('/')
+    return ''#redirect('/')
 
 
 @app.route('/delete/<string:record_id>', methods=['POST'])
@@ -275,6 +276,11 @@ def contact():
     return render_template('contact.html')
 
 
+def allowed_file(filename):
+
+    return '.' in filename and \
+            filename.rsplit('.',1)[1] in ALLOWED_EXTENSIONS
+
 def query(form, query_type):
 
     album_info = rdio.call('search', {'query': form['album'],
@@ -316,12 +322,19 @@ def query(form, query_type):
                                 'sleeve_condition': '',
                                 'color': '',
                                 'size': '',
-                                'notes': ''}]).run(g.rdb_conn)
+                                'notes': '',
+                                'user_artwork': ''}]).run(g.rdb_conn)
 
         selection = records.get(succ['generated_keys'][0]).run(g.rdb_conn)
 
         return succ['generated_keys'][0]
     elif query_type == 'edit':
+        if request.files.get('artwork'):
+            file = request.files['artwork']
+            if file and allowed_file(file.filename):
+                filename = secure_filename=(file.filename)
+                file_location = os.path.join(app.config['UPLOAD_FOLDER'], filename).split('/',1 )[1]
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         records.get(form['id']).update({
                                         'user': g.user,
                                         'artist': form['artist'],
@@ -334,7 +347,8 @@ def query(form, query_type):
                                         'sleeve_condition': form['sleeve_condition'],
                                         'color': form['color'],
                                         'notes': form['notes'],
-                                        'size' : form['size']}).run(g.rdb_conn)
+                                        'size' : form['size'],
+                                        'user_artwork': file_location}).run(g.rdb_conn)
         return {'artist': form['artist'],
                         'album': form['album'],
                             'album art': album_art}

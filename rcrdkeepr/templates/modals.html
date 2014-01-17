@@ -87,7 +87,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <form class="edit_record form-horizontal" action="/edit" method="post">
+                    <form class="edit_record form-horizontal" action="/edit" method="post" enctype="multipart/form-data">
                         <div class="col-md-3 col-md-offset-3">
                             <div class="form-group">
                                 <label for="artist">Artist</label> 
@@ -168,6 +168,16 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <textarea name="notes" class="form-control" rows="3">{{ s['notes'] }}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-md-offset-3">
+                            <div class="form-group">
+                                <label for="color">Upload Artwork</label> 
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input name="artwork" type="file">
                             </div>
                         </div>
                         <div class="col-md-3 col-md-offset-8">

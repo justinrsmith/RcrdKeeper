@@ -24,13 +24,15 @@ $('.get_details').tooltip({trigger: 'hover'})
 
 $('.save_edit').click(function(e){
     e.preventDefault()
+    console.log('hi')
     var id = $(this).attr('id')
     $(this).parents('.edit_record').ajaxSubmit({
         success: function(data){
             $('.'+id).attr('src', data)
+            window.location.reload()
         },
         error: function(e){
-            console.log(e)
+            //console.log(e)
         }
     })
 })
@@ -61,9 +63,8 @@ $(document).ready(function(){
     $("#album").select2({
         data:[
         ],
-        //multiple: true,
-        width: "300px"
-    });
+        width: '200px'
+    })
 })
 
 $('.search').click(function(){
@@ -97,8 +98,14 @@ $(document).on('click', '.register', function(e){
     } else if (valid_email != true && form != 'reset_register') {
         $(email).after('<span class="error">Please enter a valid email.</span>')
         hasError = true
+    } else if (hasError == true){
+        return false
+    } else {
+        ('.messages').empty()
+        $('.messages').addClass('alert alert-success alert-dismissable')
+        $('.messages').append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Registration successful you will shortly receive a confirmation email for your records.')
     }
-    if(hasError == true) {return false}
+    //if(hasError == true) {return false}
 })
 
 $(function (){
@@ -156,6 +163,7 @@ $('#artist').change(function(){
 
 //pagination
 $('.next').click(function(){
+    
     var page = $('.link_next').attr('href').replace('/home/','')
     page++
     console.log(page)
@@ -167,4 +175,8 @@ $('.previous').click(function(){
     page--
     console.log(page)
     $('.link_previous').attr('href', '/home/' + page)
+})
+
+$('.pagination .disabled a, .pagination .active a').on('click', function(e) {
+    e.preventDefault()
 })
