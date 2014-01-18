@@ -17,7 +17,7 @@
 
 .delete_wrap {
     float: right;
-    bottom: 15px;
+    bottom: 45px;
     right: 0px;
     position: absolute;
     margin-bottom: 10px;
@@ -37,7 +37,11 @@
 }
 
 .album_row {
-    padding-bottom: 10px;
+    padding-bottom: 40px;
+}
+
+.album {
+    padding-bottom: 40px;
 }
 
 .page-header {
@@ -55,4 +59,8 @@
 
 .panel-default {
     margin-bottom: 50px;
+}
+
+#logout {
+    padding-left: 15px;
 }

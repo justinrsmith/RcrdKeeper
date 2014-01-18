@@ -129,7 +129,7 @@ $(document).on('click', '.forgot_pw', function(e){
 $('#artist').change(function(){
     var artist = $(this).val()
     console.log(artist)
-
+    $("body").css("cursor", "progress")
     $.ajax({
         url: '/get_albums/' + artist,
         type: 'GET',    
@@ -157,6 +157,7 @@ $('#artist').change(function(){
                         },
                 })
             })
+            $("body").css("cursor", "default");
         }
     })
 })

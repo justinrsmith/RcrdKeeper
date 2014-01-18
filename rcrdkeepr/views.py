@@ -95,7 +95,6 @@ def login():
                                                             ).run(g.rdb_conn)
 
         for c in cursor:
-
             email = c['email']
             password = c['password']
             session['user'] = c['id']
@@ -202,7 +201,7 @@ def edit_record():
 
     print new_info
 
-    return ''#redirect('/')
+    return redirect('/')
 
 
 @app.route('/delete/<string:record_id>', methods=['POST'])
@@ -335,6 +334,9 @@ def query(form, query_type):
                 filename = secure_filename=(file.filename)
                 file_location = os.path.join(app.config['UPLOAD_FOLDER'], filename).split('/',1 )[1]
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        else:
+            file_location = ''
+
         records.get(form['id']).update({
                                         'user': g.user,
                                         'artist': form['artist'],
