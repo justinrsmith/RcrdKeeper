@@ -6,6 +6,7 @@ $('.sub').click(function(e){
     $('.new_record').ajaxSubmit({
         success: function(r){
             $('.albums').append(r)
+            $('.data').empty()
             $('.data').append(artist + ' - ' + album)
             $('.record_added').fadeIn('slow').delay(3000).fadeOut('slow')
         },
@@ -24,7 +25,7 @@ $('.get_details').tooltip({trigger: 'hover'})
 
 $('.save_edit').click(function(e){
     e.preventDefault()
-    console.log('hi')
+
     var id = $(this).attr('id')
     $(this).parents('.edit_record').ajaxSubmit({
         success: function(data){
@@ -39,6 +40,7 @@ $('.save_edit').click(function(e){
 
 $(document).on('click' ,'.delete', function(){
     var conf = confirm('Are you sure you want to delete?')
+
     if (conf == true){
         var record_id = $(this).parents('div:first').attr('id')
         $(this).parents('div').parents('div:first').remove()
@@ -46,9 +48,12 @@ $(document).on('click' ,'.delete', function(){
             url: '/delete/' + record_id,
             type: 'post'
         })
-        $('.messages').addClass('alert alert-success alert-dismissable')
-        $('.messages').empty()
-        $('.messages').append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Record Successfully Deleted')
+        $.post('/delete/' + record_id, function(data){
+            $('.data').append(data)
+        })
+
+        $('.data').empty()
+        $('.record_deleted').fadeIn('slow').delay(3000).fadeOut('slow')
     }
     else {
         console.log('dont delete')
@@ -83,7 +88,7 @@ $(document).on('click', '.register', function(e){
     var email = $(this).parent().siblings().children('.email').children('input')
     var valid_email = pattern.test(email.val())
     var form = $(this).parent('div').attr('id')
-    console.log(form)
+    console.log(passwordVal.length)
 
     $('.error').hide()
     if (passwordVal == '') {
@@ -97,6 +102,9 @@ $(document).on('click', '.register', function(e){
         hasError = true
     } else if (valid_email != true && form != 'reset_register') {
         $(email).after('<span class="error">Please enter a valid email.</span>')
+        hasError = true
+    } else if (passwordVal.length < 8){
+        $('#register_password').after('<span class="error">Password most be at least 8 characters.</span>')
         hasError = true
     } else if (hasError == true){
         return false

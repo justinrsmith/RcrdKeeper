@@ -23,6 +23,18 @@ def dbSetup():
     try:
         r.db_create(RCRDKEEPR_DB).run(connection)
         r.db(RCRDKEEPR_DB).table_create('records').run(connection)
+        r.db(RCRDKEEPR_DB).table_create('users').run(connection)
+        r.db(RCRDKEEPR_DB).table_create('records').run(connection)
+        r.db(RCRDKEEPR_DB).table_create('record_condition').run(connection)
+        r.db(RCRDKEEPR_DB).table_create('record_size').run(connection)
+        r.db('rcrdkeeprapp').table('record_condition').insert({'abbr':'VG','condition':'Very Good', 'order': 1})
+        r.db('rcrdkeeprapp').table('record_condition').insert({'abbr':'G','condition':'Good', 'order': 2})
+        r.db('rcrdkeeprapp').table('record_condition').insert({'abbr':'AV','condition':'Average', 'order': 3})
+        r.db('rcrdkeeprapp').table('record_condition').insert({'abbr':'P','condition':'Poor', 'order': 4})
+        r.db('rcrdkeeprapp').table('record_condition').insert({'abbr':'VP','condition':'Very Poor', 'order': 5})
+        r.db('rcrdkeeprapp').table('record_size').insert({'size':'12 inch', 'order': 1})
+        r.db('rcrdkeeprapp').table('record_size').insert({'size':'10 inch', 'order': 2})
+        r.db('rcrdkeeprapp').table('record_size').insert({'size':'7 inch', 'order': 3})
         print 'Database setup completed. Now run the app without --setup.'
     except RqlRuntimeError:
         print 'App database already exists. Run the app without --setup.'
@@ -112,9 +124,9 @@ def login():
             valid_password = check_password_hash(password, request.form['password'])
 
         if request.form['email'] != email:
-            error = 'Invalid email'
+            error = 'Email address does not exist.'
         elif not valid_password:
-            error = 'Invalid password'
+            error = 'Invalid password.'
         else:
             session['logged_in'] = True
             
@@ -183,7 +195,6 @@ def get_records(artist):
 @app.route('/submit', methods=['POST', 'GET'])
 def new_record():
 
-    print request.form
     new_info = query(request.form, 'insert')
 
     condition = list(r.table('record_condition').order_by(
@@ -205,22 +216,21 @@ def edit_record():
 
     new_info = query(request.form, 'edit')
 
-    print new_info
-
     return redirect('/')
 
 
 @app.route('/delete/<string:record_id>', methods=['POST'])
 def delete_record(record_id=None):
 
+    a = records.get(record_id).run(g.rdb_conn)
+
     records.get(record_id).delete().run(g.rdb_conn)
 
-    return ''
+    return a['artist'] + ' - ' + a['album']
 
 @app.route('/get_albums/<string:artist>', methods=['GET'])
 def get_albums(artist):
 
-    print 'hi'
     artist_info = rdio.call('search', {'query': artist, 'types': 'artist'})
 
     artist_key = artist_info['result']['results'][0]['key']
@@ -263,7 +273,6 @@ def reset(key=None):
         user = list(users.filter({'key': key}).run(g.rdb_conn)).pop()
         session['user'] = user['id']
 
-    print request.method
     if request.method == 'POST':
         hash_pw = generate_password_hash(request.form['verify_password'])
         users.get(session['user']).update({
@@ -333,33 +342,35 @@ def query(form, query_type):
 
         return succ['generated_keys'][0]
     elif query_type == 'edit':
+        record = records.get(form['id']).run(g.rdb_conn)
+
         if request.files.get('artwork'):
             file = request.files['artwork']
             if file and allowed_file(file.filename):
                 filename = secure_filename=(file.filename)
                 file_location = os.path.join(app.config['UPLOAD_FOLDER'], filename).split('/',1 )[1]
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        elif record['user_artwork']:
+            file_location = record['user_artwork']
         else:
             file_location = ''
 
         records.get(form['id']).update({
-                                        'user': g.user,
-                                        'artist': form['artist'],
-                                        'album': form['album'],
-                                        'album art': album_art,
-                                        'release_date': release_date,
-                                        'duration': duration,
-                                        'tracks': tracks,
-                                        'record_condition': form['record_condition'],
-                                        'sleeve_condition': form['sleeve_condition'],
-                                        'color': form['color'],
-                                        'notes': form['notes'],
-                                        'size' : form['size'],
-                                        'user_artwork': file_location}).run(g.rdb_conn)
+                                'user': g.user,
+                                'artist': form['artist'],
+                                'album': form['album'],
+                                'album art': album_art,
+                                'release_date': release_date,
+                                'duration': duration,
+                                'tracks': tracks,
+                                'record_condition': form['record_condition'],
+                                'sleeve_condition': form['sleeve_condition'],
+                                'color': form['color'],
+                                'notes': form['notes'],
+                                'size' : form['size'],
+                                'user_artwork': file_location}).run(g.rdb_conn)
         return {'artist': form['artist'],
                         'album': form['album'],
                             'album art': album_art}
-    else:
-        print 'failure'
 
      
