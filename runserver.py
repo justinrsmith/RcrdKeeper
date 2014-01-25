@@ -1,6 +1,11 @@
 from rcrdkeepr import app
 import argparse
-  
+import rethinkdb as r
+from rethinkdb.errors import RqlRuntimeError, RqlDriverError
+
+
+RCRDKEEPR_DB = 'rcrdkeeprapp'
+
 def dbSetup():
     connection = r.connect(host='localhost', port=28015)
     try:
