@@ -67,6 +67,8 @@ def register():
         if user_exist:
             error = "Account with this email already exist. \
             Click 'forgot password' to recover your account."
+
+            return render_template('login.html', error=error)
         else:
             hash_pw = generate_password_hash(request.form['register_password'])
 
@@ -75,13 +77,17 @@ def register():
                           'birthdate': request.form['birthdate'],
                           'key': None}).run(g.rdb_conn)
 
-            email_message = "Thank you for registering with RcrdKeepr."
+            email_message = 'Thank you for registering with RcrdKeepr.'
+
+            session['user'] = response['generated_keys'][0]
+
+            succ = 'Account successfully created. You are now logged in.'
 
             if response['inserted'] == 1:
                 emails.send_email('RcrdKeepr Registration Confirmation','flasktesting33@gmail.com',
                                     request.form['email'], email_message)
          
-        return render_template('login.html', error=error)
+        return render_template('home.html', succ=succ)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -287,8 +293,7 @@ def query(form, query_type):
 
     if album_info['result']['number_results'] != 0:
         for x in album_info['result']['results']:
-
-            if x['artist'] == form['artist']:
+            if x['artist'].upper() == form['artist'].upper():
                 album_art = x['icon']
                 release_date = x['releaseDate']
                 duration = x['duration']

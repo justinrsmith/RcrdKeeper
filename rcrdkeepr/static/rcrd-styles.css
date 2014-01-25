@@ -64,3 +64,20 @@
 #logout {
     padding-left: 15px;
 }
+
+#comment {
+    height: 200px;
+    width: 300px;
+}
+
+#notification {
+  display: none;
+  width: 300px;
+  position: fixed;
+  bottom: 0;
+  z-index: 500;
+  background: #f5f5f5;
+  border: 3px solid #80b7ed;
+  padding: 10px;
+  margin-left: 10px;
+}

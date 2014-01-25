@@ -1,9 +1,17 @@
 {% extends 'base.html' %}
     {% block content %}
+	    {% if succ %}
+	        <div class="alert alert-success">
+	             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	                <p class=error>
+	                <strong>Success:</strong> {{ succ }}
+	        </div>
+	    {% endif %}
+
 	    <div class="panel panel-default">
 		    <div class="panel-heading">
 		        <div class="input_data row">
-			        <div class="col-md-8">
+			        <div class="record_input col-md-8">
 			            <center>
 			                <form class="new_record form-inline" action="/submit" method="post" role="form">
 			                    <div class="form-group">

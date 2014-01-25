@@ -1,13 +1,13 @@
 $('.sub').click(function(e){
     e.preventDefault()
-    console.log('hi')
+    var artist = $(this).parents('div.record_input').find('#artist').val()
+    var album = $(this).parents('div.record_input').find('#album').val()
+
     $('.new_record').ajaxSubmit({
         success: function(r){
-            console.log(r)
             $('.albums').append(r)
-            $('.messages').empty()
-            $('.messages').addClass('alert alert-success alert-dismissable')
-            $('.messages').append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Record Successfully Added')
+            $('.data').append(artist + ' - ' + album)
+            $('.record_added').fadeIn('slow').delay(3000).fadeOut('slow')
         },
         error: function(e){
             console.log(e)
@@ -37,7 +37,7 @@ $('.save_edit').click(function(e){
     })
 })
 
-$('.delete').click(function(){
+$(document).on('click' ,'.delete', function(){
     var conf = confirm('Are you sure you want to delete?')
     if (conf == true){
         var record_id = $(this).parents('div:first').attr('id')
