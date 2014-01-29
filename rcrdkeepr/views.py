@@ -158,14 +158,24 @@ def home(page=1):
                             status_next=status_next,
                             status_prev=status_prev)
 
-@app.route('/get_records/<string:artist>', methods=['GET'])
-def get_records(artist):
+@app.route('/search_records/<string:artist>', methods=['GET'])
+def search_records(artist):
 
     selection = list(records.filter(
         {'artist':artist, 'user':g.user}).order_by(
                     'artist').limit(10).run(g.rdb_conn))
 
     return render_template('records.html',
+                            selection=selection)
+
+@app.route('/get_records', methods=['GET'])
+def get_records():
+
+    selection = list(records.filter(
+        {'user':g.user}).order_by(
+                    'artist').run(g.rdb_conn))
+
+    return render_template('get_records.html',
                             selection=selection)
 
 
@@ -191,6 +201,7 @@ def new_record():
 @app.route('/edit', methods=['POST'])
 def edit_record():
 
+    print request.form
     new_info = query(request.form, 'edit')
 
     return redirect('/')

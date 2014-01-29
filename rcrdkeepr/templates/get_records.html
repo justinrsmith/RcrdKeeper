@@ -1,0 +1,30 @@
+<div class="col-md-8 col-md-offset-2">
+	<table class="table table-condensed list">
+		<tr>
+			<th>Artist</th>
+			<th>Album</th>
+			<th></th>
+			<th></th>
+		</tr>
+		{% for s in selection %}
+			<tr>
+				<td>{{s.artist}}</td>
+				<td>{{s.album}}</td>
+				<td>
+					<a data-toggle="modal" href="#editModal{{ s['id'] }}">
+	    				<span class="glyphicon glyphicon-pencil"></span>
+	    			</a>
+	    		</td>
+	    		<td>
+	    			<div class="delete_wrap" id="{{ s['id'] }}">
+	    				<a href="#" class="delete">
+	    				    <span id="delete_logo" class="glyphicon glyphicon-remove"></span>
+	    				</a>
+	    			</div>
+	    		</td>
+			</tr>
+			{% include 'modals.html' %} 
+		{% endfor %}
+	</table>
+</div>
+

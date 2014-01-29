@@ -5,7 +5,7 @@
 .alert_area {
     display: none;
 }
-
+/*
 .glyphicon {
     position: absolute!important;
     right: 60px;
@@ -22,7 +22,7 @@
     position: absolute;
     margin-bottom: 10px;
 }
-
+*/
 .select2-container {
   width: 250px;
 }

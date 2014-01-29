@@ -74,7 +74,7 @@ $(document).ready(function(){
 
 $('.search').click(function(){
     var artist = $('#record_search option:selected').val()
-    $.get('/get_records/' + artist, function(data){
+    $.get('/search_records/' + artist, function(data){
         $('.albums').empty()
         $('.albums').append(data)
     })
@@ -188,4 +188,14 @@ $('.previous').click(function(){
 
 $('.pagination .disabled a, .pagination .active a').on('click', function(e) {
     e.preventDefault()
+})
+
+$('.list_view').click(function(e){
+    e.preventDefault()
+
+    $.get('/get_records', function(data){
+        console.log(data)
+        $('.albums').empty()
+        $('.albums').append(data)
+    })
 })

@@ -1,12 +1,13 @@
 from flask import Flask
 import os	
 from flask.ext.mail import Mail
+from time import gmtime, strftime
 
 UPLOAD_FOLDER = 'rcrdkeepr/static/user_albums/'
 
 
 app = Flask(__name__)
-app.secret_key = 'some_secret'
+app.secret_key = 'some_secret' + strftime("%Y-%m-%d %H:%M:%S", gmtime())
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config.from_object(__name__)
 
