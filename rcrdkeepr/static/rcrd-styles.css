@@ -81,3 +81,16 @@
   padding: 10px;
   margin-left: 10px;
 }
+
+.list_view {
+  float: right;
+}
+
+.view_holder {
+  padding-right: 0px;
+}
+
+.refresh_holder {
+  padding-left: 0px;
+  padding-right: 0px;
+}

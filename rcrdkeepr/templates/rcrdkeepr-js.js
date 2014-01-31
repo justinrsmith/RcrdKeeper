@@ -67,8 +67,7 @@ $(document).ready(function(){
 $(document).ready(function(){
     $("#album").select2({
         data:[
-        ],
-        width: '200px'
+        ]
     })
 })
 
@@ -190,11 +189,38 @@ $('.pagination .disabled a, .pagination .active a').on('click', function(e) {
     e.preventDefault()
 })
 
-$('.list_view').click(function(e){
+$(document).on('click', '.list_view', function(e){
+    e.preventDefault()
+
+    $.get('/list_records', function(data){
+        $('.albums').empty()
+        $('.albums').append(data)
+        $(document).ready(function(){
+            $('.view_holder').empty()
+            $('.view_holder').append('<button type="button" class="grid_view btn btn-default btn-ms"> \
+                    <span class="glyphicon glyphicon-th"></span> \
+                </button>')
+        })
+    })
+})
+
+$(document).on('click', '.grid_view', function(e){
     e.preventDefault()
 
     $.get('/get_records', function(data){
-        console.log(data)
+        $('.albums').empty()
+        $('.albums').append(data)
+        $('.view_holder').empty()
+        $('.view_holder').append('<button type="button" class="list_view btn btn-default btn-ms"> \
+                <span class="glyphicon glyphicon-list"></span> \
+            </button>')
+    })
+})
+
+$(document).on('click', '.refresh', function(e){
+    e.preventDefault()
+
+    $.get('/get_records', function(data){
         $('.albums').empty()
         $('.albums').append(data)
     })

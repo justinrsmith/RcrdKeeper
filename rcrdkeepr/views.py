@@ -163,13 +163,24 @@ def search_records(artist):
 
     selection = list(records.filter(
         {'artist':artist, 'user':g.user}).order_by(
-                    'artist').limit(10).run(g.rdb_conn))
+                    'artist').limit(16).run(g.rdb_conn))
 
     return render_template('records.html',
                             selection=selection)
 
+
 @app.route('/get_records', methods=['GET'])
 def get_records():
+
+    selection = list(records.filter({'user': g.user}).order_by(
+                    'artist').limit(16).run(g.rdb_conn))
+
+    return render_template('records.html',
+                            selection=selection)
+
+
+@app.route('/list_records', methods=['GET'])
+def list_records():
 
     selection = list(records.filter(
         {'user':g.user}).order_by(

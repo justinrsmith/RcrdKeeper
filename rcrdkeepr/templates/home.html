@@ -1,56 +1,41 @@
-{% extends 'base.html' %}
-    {% block content %}
-	    {% if succ %}
-	        <div class="alert alert-success">
-	             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-	                <p class=error>
-	                <strong>Success:</strong> {{ succ }}
-	        </div>
-	    {% endif %}
-
-	    <div class="panel panel-default">
-		    <div class="panel-heading">
-		        <div class="input_data row">
-			        <div class="record_input col-md-8">
-			            <center>
-			                <form class="new_record form-inline" action="/submit" method="post" role="form">
-			                    <div class="form-group">
-			                        <input type="text" class="form-control" id="artist" name="artist" placeholder="Enter Artist Name">
-			                    </div>
-			                    <div class="form-group">
-			                    	<input type="hidden" id="album" name="album">
-			                        <!--<input type="text" class="form-control" id="album" name="album" placeholder="Enter Album Name">-->
-			                    </div>
-			                    <button type="submit" class="sub btn btn-default">Add Record</button>
-			                </form>
-			            </center>
-			        </div>
-			        <div class="col-md-4">
-			            <select id="record_search" multiple="true" placeholder="Artist Search">
-			                <option></option>
-			                {% for a in artist %}
-			                <option>{{ a.artist }}</option>
-			                {% endfor %}
-			            </select>
-
-			            <a class="search btn btn-default">Search</a>
-			        </div>
+<div class="uber_hack">
+	{% extends 'base.html' %}
+	    {% block content %}
+		    {% if succ %}
+		        <div class="alert alert-success">
+		             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		                <p class=error>
+		                <strong>Success:</strong> {{ succ }}
 		        </div>
+		    {% endif %}
+
+
+		    <div class="col-md-1 col-md-offset-10 view_holder"></div>
+		    <div class="col-md-1 refresh_holder">
+		    	<button class=" btn btn-default btn-ms refresh"><span class="glyphicon glyphicon-refresh"></span></button>
 		    </div>
-	    </div>
-        <div class="albums row">
-        		<a class="list_view">List</a>
- 				{% include 'records.html' %}           
-        </div>
-        <div class="col-md-1 col-md-offset-11">
-	        <div class="pageinate_holder">
-	            <ul class="pagination">
-	            <li class="previous {{ status_prev }}"><a class="link_previous" href="/home/{{ page }}">&laquo;</a></li>
-	                {% for p in pages %}
-	                    <li {% if page == p %} class="active" {% endif %}><a href="/{{ p }}">{{ p }}</a></li>
-	                {% endfor %}
-	            <li class="next {{ status_next }}"><a class="link_next" href="/home/{{ page }}">&raquo;</a></li>
-	            </ul>
+	        <div class="albums row">
+	 				{% include 'records.html' %}           
 	        </div>
-        </div>
-    {% endblock %}
+	        <div class="col-md-1 col-md-offset-11">
+		        <div class="pageinate_holder">
+		            <ul class="pagination">
+		            <li class="previous {{ status_prev }}"><a class="link_previous" href="/home/{{ page }}">&laquo;</a></li>
+		                {% for p in pages %}
+		                    <li {% if page == p %} class="active" {% endif %}><a href="/{{ p }}">{{ p }}</a></li>
+		                {% endfor %}
+		            <li class="next {{ status_next }}"><a class="link_next" href="/home/{{ page }}">&raquo;</a></li>
+		            </ul>
+		        </div>
+	        </div>
+</div>	        
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('.view_holder').empty()
+			$('.view_holder').append('<button type="button" class="list_view btn btn-default btn-ms"> \
+		    		<span class="glyphicon glyphicon-list"></span> \
+		    	</button>')
+		})
+	</script>
+	    {% endblock %}
+
