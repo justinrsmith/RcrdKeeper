@@ -3,17 +3,25 @@ $('.sub').click(function(e){
     var artist = $(this).parents('div.record_input').find('#artist').val()
     var album = $(this).parents('div.record_input').find('#album').val()
 
-    $('.new_record').ajaxSubmit({
-        success: function(r){
-            $('.albums').append(r)
-            $('.data').empty()
-            $('.data').append(artist + ' - ' + album)
-            $('.record_added').fadeIn('slow').delay(3000).fadeOut('slow')
-        },
-        error: function(e){
-            console.log(e)
-        }
-    })
+    if($('.albums').find('table.list').attr('class') !== undefined){
+        $('.new_record').attr('action', '/submit/list')
+
+        $('.new_record').ajaxSubmit({
+            success: function(data){
+                $('.list tr:last').after(data)
+            }
+        })
+    }
+    else{
+        $('.new_record').ajaxSubmit({
+            success: function(data){
+                $('.albums').append(data)
+                $('.data').empty()
+                $('.data').append(artist + ' - ' + album)
+                $('.record_added').fadeIn('slow').delay(3000).fadeOut('slow')
+            }
+        })
+    }
 })
 
 $(document).on('dblclick', '.get_details', function(){
@@ -31,9 +39,6 @@ $('.save_edit').click(function(e){
         success: function(data){
             $('.'+id).attr('src', data)
             window.location.reload()
-        },
-        error: function(e){
-            //console.log(e)
         }
     })
 })
@@ -55,8 +60,24 @@ $(document).on('click' ,'.delete', function(){
         $('.data').empty()
         $('.record_deleted').fadeIn('slow').delay(3000).fadeOut('slow')
     }
-    else {
-        console.log('dont delete')
+})
+
+$(document).on('click' ,'.delete_from_list', function(){
+    var conf = confirm('Are you sure you want to delete?')
+
+    if (conf == true){
+        var record_id = $(this).parents('tr').attr('id')
+        $(this).parents('tr').slideToggle('slow')
+        $.ajax({
+            url: '/delete/' + record_id,
+            type: 'post'
+        })
+        $.post('/delete/' + record_id, function(data){
+            $('.data').append(data)
+        })
+
+        $('.data').empty()
+        $('.record_deleted').fadeIn('slow').delay(3000).fadeOut('slow')
     }
 })
 
@@ -73,7 +94,7 @@ $(document).ready(function(){
 
 $('.search').click(function(){
     var artist = $('#record_search option:selected').val()
-    $.get('/search_records/' + artist, function(data){
+    $.get('/get_records/' + artist, function(data){
         $('.albums').empty()
         $('.albums').append(data)
     })

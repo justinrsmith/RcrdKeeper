@@ -5,13 +5,15 @@
 		<tr>
 			<th>Artist</th>
 			<th>Album</th>
+			<th>Release Date</th>
 			<th></th>
 			<th></th>
 		</tr>
 		{% for s in selection %}
-			<tr>
+			<tr id="{{ s['id'] }}">
 				<td>{{s.artist}}</td>
 				<td>{{s.album}}</td>
+				<td>{{s.release_date}}
 				<td>
 					<a data-toggle="modal" href="#editModal{{ s['id'] }}">
 	    				<span class="glyphicon glyphicon-pencil"></span>
@@ -19,7 +21,7 @@
 	    		</td>
 	    		<td>
 	    			<div class="delete_wrap" id="{{ s['id'] }}">
-	    				<a href="#" class="delete">
+	    				<a href="#" class="delete_from_list">
 	    				    <span id="delete_logo" class="glyphicon glyphicon-remove"></span>
 	    				</a>
 	    			</div>
@@ -32,3 +34,8 @@
 	{% endfor %}
 </div>
 
+<script type="text/javascript">
+	$(document).on('mouseover', '.list tr', function(){
+	    console.log('hi')
+	})
+</script>

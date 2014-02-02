@@ -54,7 +54,7 @@
 
 .panel-default>.panel-heading {
     background-color: #cee2f8;
-    border-color: none;
+    border: none;
 }
 
 .panel-default {
@@ -83,6 +83,10 @@
 }
 
 .list_view {
+  float: right;
+}
+
+.grid_view {
   float: right;
 }
 

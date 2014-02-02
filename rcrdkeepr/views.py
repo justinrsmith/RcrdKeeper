@@ -158,22 +158,17 @@ def home(page=1):
                             status_next=status_next,
                             status_prev=status_prev)
 
-@app.route('/search_records/<string:artist>', methods=['GET'])
-def search_records(artist):
-
-    selection = list(records.filter(
-        {'artist':artist, 'user':g.user}).order_by(
-                    'artist').limit(16).run(g.rdb_conn))
-
-    return render_template('records.html',
-                            selection=selection)
-
-
 @app.route('/get_records', methods=['GET'])
-def get_records():
+@app.route('/get_records/<string:artist>', methods=['GET'])
+def get_records(artist=None):
 
-    selection = list(records.filter({'user': g.user}).order_by(
-                    'artist').limit(16).run(g.rdb_conn))
+    if not artist:
+        selection = list(records.filter({'user': g.user}).order_by(
+                        'artist').limit(16).run(g.rdb_conn))
+    else:
+        selection = list(records.filter({
+                        'user': g.user, 'artist': artist}).order_by(
+                        'artist').limit(16).run(g.rdb_conn))
 
     return render_template('records.html',
                             selection=selection)
@@ -182,16 +177,26 @@ def get_records():
 @app.route('/list_records', methods=['GET'])
 def list_records():
 
+    condition = list(r.table('record_condition').order_by(
+                                    'order').run(g.rdb_conn))
+
+    size = list(r.table('record_size').order_by(
+                                    'order').run(g.rdb_conn))
+
     selection = list(records.filter(
         {'user':g.user}).order_by(
                     'artist').run(g.rdb_conn))
 
-    return render_template('get_records.html',
-                            selection=selection)
+    return render_template('list_records.html',
+                            selection=selection,
+                            condition=condition,
+                            size=size)
 
 
-@app.route('/submit', methods=['POST', 'GET'])
-def new_record():
+@app.route('/submit/<string:location>', methods=['POST', 'GET'])
+def new_record(location):
+
+    print location
 
     new_info = query(request.form, 'insert')
 
@@ -203,10 +208,16 @@ def new_record():
 
     record = records.get(new_info).run(g.rdb_conn)
 
-    return render_template('new_record.html',
-                            s=record,
-                            condition=condition,
-                            size=size)
+    if location == 'grid':
+        return render_template('new_record.html',
+                                s=record,
+                                condition=condition,
+                                size=size)
+    else:
+        return render_template('add_list.html',
+                                s=record,
+                                condition=condition,
+                                size=size)
 
 
 @app.route('/edit', methods=['POST'])
@@ -368,6 +379,7 @@ def query(form, query_type):
                                 'notes': form['notes'],
                                 'size' : form['size'],
                                 'user_artwork': file_location}).run(g.rdb_conn)
+
         return {'artist': form['artist'],
                         'album': form['album'],
                             'album art': album_art}

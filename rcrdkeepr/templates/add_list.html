@@ -1,0 +1,19 @@
+<tr id="{{ s['id'] }}">
+	<td>{{s.artist}}</td>
+	<td>{{s.album}}</td>
+	<td>{{s.release_date}}
+	<td></td>
+	<td>
+		<div class="delete_wrap" id="{{ s['id'] }}">
+			<a href="#" class="delete_from_list">
+			    <span id="delete_logo" class="glyphicon glyphicon-remove"></span>
+			</a>
+		</div>
+	</td>
+</tr>
+
+<script type="text/javascript">
+	$(document).on('mouseover', '.list tr', function(){
+	    console.log('hi')
+	})
+</script>
