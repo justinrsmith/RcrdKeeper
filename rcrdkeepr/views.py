@@ -70,7 +70,8 @@ def register():
 
             session['user'] = response['generated_keys'][0]
 
-            succ = 'Account successfully created. You are now logged in.'
+            succ = 'Account successfully created. You are now logged in. You will recieve a \
+                confirmation email shortly.'
 
             if response['inserted'] == 1:
                 emails.send_email('RcrdKeepr Registration Confirmation','flasktesting33@gmail.com',
@@ -127,13 +128,13 @@ def home(page=1):
         abort(401)
 
     artist = list(records.filter({
-                        'user':g.user}).pluck('artist').run(g.rdb_conn))
+                        'user':g.user}).order_by('artist').pluck('artist').run(g.rdb_conn))
 
     artist = [dict(tupleized) for tupleized in set(tuple(item.items()) for item in artist)]
 
     selection = list(records.filter(
         {'user':g.user}).order_by(
-            'artist').skip((page-1)*16).limit(16).run(g.rdb_conn))
+            'artist', 'album').skip((page-1)*16).limit(16).run(g.rdb_conn))
 
     status_next = None
     if len(selection) < 16:
@@ -164,11 +165,11 @@ def get_records(artist=None):
 
     if not artist:
         selection = list(records.filter({'user': g.user}).order_by(
-                        'artist').limit(16).run(g.rdb_conn))
+                        'artist', 'album').limit(16).run(g.rdb_conn))
     else:
         selection = list(records.filter({
                         'user': g.user, 'artist': artist}).order_by(
-                        'artist').limit(16).run(g.rdb_conn))
+                        'artist', 'album').limit(16).run(g.rdb_conn))
 
     return render_template('records.html',
                             selection=selection)

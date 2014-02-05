@@ -9,6 +9,9 @@ $('.sub').click(function(e){
         $('.new_record').ajaxSubmit({
             success: function(data){
                 $('.list tr:last').after(data)
+                $('.data').empty()
+                $('.data').append(artist + ' - ' + album)
+                $('.record_added').fadeIn('slow').delay(3000).fadeOut('slow')
             }
         })
     }
@@ -109,7 +112,7 @@ $(document).on('click', '.register', function(e){
     var valid_email = pattern.test(email.val())
     var form = $(this).parent('div').attr('id')
     console.log(passwordVal.length)
-
+    console.log('hi')
     $('.error').hide()
     if (passwordVal == '') {
         $('#register_password').after('<span class="error">Please enter a password.</span>')
@@ -128,12 +131,8 @@ $(document).on('click', '.register', function(e){
         hasError = true
     } else if (hasError == true){
         return false
-    } else {
-        ('.messages').empty()
-        $('.messages').addClass('alert alert-success alert-dismissable')
-        $('.messages').append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Registration successful you will shortly receive a confirmation email for your records.')
     }
-    //if(hasError == true) {return false}
+    if(hasError == true) {return false}
 })
 
 $(function (){
