@@ -301,6 +301,12 @@ def contact():
     return render_template('contact.html')
 
 
+@app.route('/faq', methods=['GET'])
+def faq():
+
+    return render_template('faq.html')
+
+
 def allowed_file(filename):
 
     return '.' in filename and \
