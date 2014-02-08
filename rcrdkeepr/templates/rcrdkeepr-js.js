@@ -97,7 +97,7 @@ $(document).ready(function(){
 
 $('.search').click(function(){
     var artist = $('#record_search option:selected').val()
-    $.get('/get_records/' + artist, function(data){
+    $.get('/get_records/1/' + artist, function(data){
         $('.albums').empty()
         $('.albums').append(data)
     })
@@ -190,19 +190,25 @@ $('#artist').change(function(){
 })
 
 //pagination
-$('.next').click(function(){
-    
+$('.next').click(function(e){
+    e.preventDefault()
     var page = $('.link_next').attr('href').replace('/home/','')
     page++
-    console.log(page)
-    $('.link_next').attr('href', '/home/' + page)
+
+    $.get('/get_records/' + page, function(data){
+        $('.albums').empty()
+        $('.albums').append(data)
+    })
 })
 
 $('.previous').click(function(){
     var page = $('.link_previous').attr('href').replace('/home/','')
     page--
-    console.log(page)
-    $('.link_previous').attr('href', '/home/' + page)
+    
+    $.get('/get_records/' + page, function(data){
+        $('.albums').empty()
+        $('.albums').append(data)
+    })
 })
 
 $('.pagination .disabled a, .pagination .active a').on('click', function(e) {
@@ -243,5 +249,20 @@ $(document).on('click', '.refresh', function(e){
     $.get('/get_records', function(data){
         $('.albums').empty()
         $('.albums').append(data)
+    })
+})
+
+$(document).on('click', '#contact_sub', function(e){
+    e.preventDefault()
+    var data = {}
+    var that = $(this).parents('.contact').find('select')
+
+    $.each($(this).parents('.contact').find('input'), function(){
+        data[$(this).attr('id')] = $(this).val()
+    })
+    data[that.attr('id')] = that.val()
+
+    $.post('/contact', data, function(){
+        $('.messages').append('<div class="alert alert-success alert-dismissable">Thank you for contacting us we will response as soon as we can.</div>')
     })
 })

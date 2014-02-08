@@ -125,8 +125,7 @@ def logout():
 def home(page=1):
 
     if not session.get('logged_in'):
-        abort(401)
-
+        return render_template('login.html')
     artist = list(records.filter({
                         'user':g.user}).order_by('artist').pluck('artist').run(g.rdb_conn))
 
@@ -137,7 +136,7 @@ def home(page=1):
             'artist', 'album').skip((page-1)*16).limit(16).run(g.rdb_conn))
 
     status_next = None
-    if len(selection) < 16:
+    if len(selection) <= 16:
         status_next = 'disabled'
 
     status_prev = None
@@ -159,13 +158,14 @@ def home(page=1):
                             status_next=status_next,
                             status_prev=status_prev)
 
-@app.route('/get_records', methods=['GET'])
-@app.route('/get_records/<string:artist>', methods=['GET'])
-def get_records(artist=None):
+@app.route('/get_records/<int:page>', methods=['GET'])
+@app.route('/get_records/<int:page>/<string:artist>', methods=['GET'])
+def get_records(page, artist=None):
 
     if not artist:
         selection = list(records.filter({'user': g.user}).order_by(
-                        'artist', 'album').limit(16).run(g.rdb_conn))
+                        'artist', 'album').skip((page-1)*16).limit(
+                            16).run(g.rdb_conn))
     else:
         selection = list(records.filter({
                         'user': g.user, 'artist': artist}).order_by(
@@ -297,6 +297,19 @@ def reset(key=None):
 
 @app.route('/contact', methods=['POST', 'GET'])
 def contact():
+
+    if request.method == 'POST':
+
+        response = r.db('rcrdkeeprapp').table('contact').insert(
+            [{'issue_type': request.form['issue_type'],
+              'email': request.form['email'],
+              'comment': request.form['comment']}]).run(g.rdb_conn)
+
+        email_message = 'New request'
+
+        if response['inserted'] == 1:
+            emails.send_email('RcrdKeepr Registration Confirmation','flasktesting33@gmail.com',
+                                'flasktesting33@gmail.com', email_message)
 
     return render_template('contact.html')
 

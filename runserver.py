@@ -14,6 +14,7 @@ def dbSetup():
         r.db(RCRDKEEPR_DB).table_create('users').run(connection)
         r.db(RCRDKEEPR_DB).table_create('record_condition').run(connection)
         r.db(RCRDKEEPR_DB).table_create('record_size').run(connection)
+        r.db(RCRDKEEPR_DB).table_create('contact').run(connection)
         r.db('rcrdkeeprapp').table('record_condition').insert({'abbr':'VG','condition':'Very Good', 'order': 1}).run(connection)
         r.db('rcrdkeeprapp').table('record_condition').insert({'abbr':'G','condition':'Good', 'order': 2}).run(connection)
         r.db('rcrdkeeprapp').table('record_condition').insert({'abbr':'AV','condition':'Average', 'order': 3}).run(connection)

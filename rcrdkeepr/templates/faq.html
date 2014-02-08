@@ -1,25 +1,38 @@
-
 {% extends 'base.html' %}
 
 {% block content %}
-	<div class="container">
-  		<h1>FAQ <small>Subtext for header</small></h1>
+	<div class="well">
+		<div class="container">
+	  		<h1>FAQ <small>Frequently Asked Questions</small></h1>
 
-  		<div class="row">
-  			<div class="col-md-6">
-  				<ul>
-  					<a href="javscript:;"><li>test</li></a>
-  				</ul>
-  			</div>
-  		</div>
-  			<div class="col-md-offset-10 col-md-2">
-  				<a class="btn btn-primary" href="/home">Return Home</a>
-  			</div>
-  		</div>
+	  		<div class="row">
+	  			<div class="col-md-6">
+	  				<dl>
+	  				    <dt>What is rcrdkeepr?</dt>
+	  				  	    <dd class="desc">Rcrdkeepr is a vinyl record management system, used to keep track and organize your records for simple cataloging and information retrevial. By being powered by Rdio you are able to get information automatically including artwork, release date, album length, etc.</dd>
+  				  	  	<dt>Why does my album come up with no information?</dt>
+  				  		    <dd class="desc">Being powered by Rdio means being limited to information only available in the Rdio catalog (which still includes 18 million+ songs).</dd>
+			  		  	<dt>Can I add my own infomation to an album?</dt>
+			  			    <dd class="desc">Yes, whether you want to add it because Rdio does not have it available or you want to do customization all records are editable. Be clicking the pencil above the record you get a pop-up of options that can be modified.</dd>
+	  				    <dt>I would like to make a suggestion.</dt>
+	  				  	    <dd class="desc">Great! All suggestions to improve the user experience are welcome just select 'Contact' from above and for issue type select Suggestion and fill out what it is you would like and it will be taken into consideration.</dd>
+			  		  	<dt>I have encountered an error.</dt>
+			  			    <dd class="desc">Please submit any errors by going to the 'Contact' form and selecting 'Error' as type and please describe the error and we will get it fixed.</dd>
+	  				</dl>
+	  			</div>
+	  		</div>
+	  			<div class="col-md-offset-10 col-md-2">
+	  				<a class="btn btn-primary" href="/home">Return Home</a>
+	  			</div>
+	  		</div>
 
-  		<script type="text/javascript">
-  			$('.input_data').parents('div.panel').hide()
-  		</script>
+	  		<script type="text/javascript">
+	  			$('#faq').hide()
+	  			$('.input_data').parents('div.panel').hide()
+	  			$('#logout').empty().append('Home')
+	  			$('#logout').attr('href', '/home')
+	  		</script>
+		</div>
 	</div>
 {% endblock %}
 

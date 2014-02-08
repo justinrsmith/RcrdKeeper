@@ -86,3 +86,11 @@
 .album_options {
   padding-bottom: 10px;
 }
+
+.desc {
+  padding-left: 25px;
+}
+
+#issue_type {
+  width: 200px;
+}
