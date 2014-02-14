@@ -1,4 +1,4 @@
-.mgmt {
+.header {
     float: right;
 }
 
@@ -31,17 +31,8 @@
     margin: 10px 0 20px;
 }
 
-.input_data {
-    padding-top: 10px;
-}
-
-.panel-default>.panel-heading {
-    background-color: #cee2f8;
-    border: none;
-}
-
-.panel-default {
-    margin-bottom: 50px;
+#input {
+  padding-bottom: 20px;
 }
 
 .quick_link{
@@ -93,4 +84,34 @@
 
 #issue_type {
   width: 200px;
+}
+
+.search {
+  margin-left: 15px;
+}
+
+.select2-container {
+    margin-bottom:9px;
+}
+
+.select2-container-multi .select2-choices {
+    height: 20px;
+    font-size: 14px;
+    line-height: 20px;
+    border: 1px solid #CCCCCC;
+    color: #555555;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.select2-container-multi.select2-dropdown-open .select2-choices {
+    -webkit-border-radius: 3px 3px 0 0;
+    -moz-border-radius: 3px 3px 0 0;
+    border-radius: 3px 3px 0 0;
+}
+
+.get_details {
+    display:block;
+    margin:auto;
 }

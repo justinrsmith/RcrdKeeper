@@ -52,16 +52,12 @@ $(document).on('click' ,'.delete', function(){
     if (conf == true){
         var record_id = $(this).parents('div:first').attr('id')
         $(this).parents('div').parents('div:first').remove()
-        $.ajax({
-            url: '/delete/' + record_id,
-            type: 'post'
-        })
-        $.post('/delete/' + record_id, function(data){
-            $('.data').append(data)
-        })
 
-        $('.data').empty()
-        $('.record_deleted').fadeIn('slow').delay(3000).fadeOut('slow')
+        $.post('/delete/' + record_id, function(data){
+            $('.data').empty()
+            $('.data').append(data)
+            $('.record_deleted').fadeIn('slow').delay(3000).fadeOut('slow')
+        })        
     }
 })
 
@@ -88,14 +84,16 @@ $(document).ready(function(){
     $('#record_search').select2({ maximumSelectionSize: 1 }) 
 })
 
+$('#album').prop('disabled', true)
+
 $(document).ready(function(){
-    $("#album").select2({
+    $('#album').select2({
         data:[
         ]
     })
 })
 
-$('.search').click(function(){
+$('#record_search').change(function(){
     var artist = $('#record_search option:selected').val()
     $.get('/get_records/1/' + artist, function(data){
         $('.albums').empty()
@@ -155,8 +153,8 @@ $(document).on('click', '.forgot_pw', function(e){
 
 $('#artist').change(function(){
     var artist = $(this).val()
-    console.log(artist)
-    $("body").css("cursor", "progress")
+
+    $('body').css('cursor', 'progress')
     $.ajax({
         url: '/get_albums/' + artist,
         type: 'GET',    
@@ -174,7 +172,7 @@ $('#artist').change(function(){
                 return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
             })
             $(document).ready(function(){
-                $("#album").select2({
+                $('#album').select2({
                     data: options,
                     createSearchChoice:function(term, data) {
                         if ($(data).filter(function() {
@@ -183,8 +181,9 @@ $('#artist').change(function(){
                             }
                         },
                 })
+                $('#album').prop('disabled', false)
             })
-            $("body").css("cursor", "default");
+            $('body').css('cursor', 'default');
         }
     })
 })
@@ -233,7 +232,7 @@ $(document).on('click', '.list_view', function(e){
 $(document).on('click', '.grid_view', function(e){
     e.preventDefault()
 
-    $.get('/get_records', function(data){
+    $.get('/get_records/1', function(data){
         $('.albums').empty()
         $('.albums').append(data)
         $('.view_holder').empty()
@@ -246,7 +245,7 @@ $(document).on('click', '.grid_view', function(e){
 $(document).on('click', '.refresh', function(e){
     e.preventDefault()
 
-    $.get('/get_records', function(data){
+    $.get('/get_records/1', function(data){
         $('.albums').empty()
         $('.albums').append(data)
     })
@@ -265,4 +264,8 @@ $(document).on('click', '#contact_sub', function(e){
     $.post('/contact', data, function(){
         $('.messages').append('<div class="alert alert-success alert-dismissable">Thank you for contacting us we will response as soon as we can.</div>')
     })
+})
+
+$(document).on('click', '.add', function(){
+    $('.new_record.hidden-md').css('visibility','visible').hide().fadeIn('slow').removeClass('hidden-md')
 })

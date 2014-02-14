@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 
-<script src="../static/less-1.3.0.min.js"></script>
-<script src="../static/jquery-1.10.2.js"></script>
-<script src="../static/bootstrap/js/bootstrap.min.js"></script>
-<script src="../static/jquery.form.js"></script>
-<script src="../static/select2-3.4.5/select2.js"></script>
+<head>
+    <script src="../static/less-1.3.0.min.js"></script>
+    <script src="../static/jquery-1.10.2.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../static/jquery.form.js"></script>
+    <script src="../static/select2-3.4.5/select2.js"></script>
 
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="../static/rcrd-styles.css">
-<link rel="stylesheet" type="text/css" href="../static/select2-3.4.5/select2.css">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/rcrd-styles.css">
+    <link rel="stylesheet" type="text/css" href="../static/select2-3.4.5/select2.css">
 
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1, user-scalable=no">
+</head>
 
 <div class="container">
     <div class="page-header">
@@ -22,7 +25,12 @@
             </div>
         </div>
         <div class="row">
-            <h1>RcrdKeepr <small class ="mgmt">Vinyl Management powered by <img width="75" height="28" src='http://developer.rdio.com/files/RdioBlueLogo.png'></img></small></h1>
+            <div class="col-md-2">
+                <h1>RcrdKeepr</h1>
+            </div>
+            <div class="col-md-6 col-md-offset-4">
+                <h1><small class="header">Vinyl Management powered by <img width="75" height="28" src='http://developer.rdio.com/files/RdioBlueLogo.png'></img></small></h1>
+            </div> 
         </div>
     </div>
     <body>
@@ -35,33 +43,47 @@
                 </div>
             {% endif %}
         </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="input_data row">
-                        <div class="record_input col-md-8">
-                            <center>
-                                <form class="new_record form-inline" action="/submit/grid" method="post" role="form">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" id="artist" name="artist" placeholder="Enter Artist Name">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="hidden" id="album" name="album">
-                                    </div>
-                                    <button type="submit" class="sub btn btn-default">Add Record</button>
-                                </form>
-                            </center>
+            <div class="row" id="input">
+                <div class="col-md-9">
+                    <form class="hidden-md new_record form-inline" action="/submit/grid" method="post" role="form">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="artist" name="artist" placeholder="Enter Artist Name">
                         </div>
-                        <div class="col-md-4">
-                            <select id="record_search" multiple="true" placeholder="Artist Search">
-                                <option></option>
-                                {% for a in artist %}
-                                <option>{{ a.artist }}</option>
-                                {% endfor %}
-                            </select>
-                            <a class="search btn btn-default">Search</a>
+                        <div class="form-group">
+                            <input type="hidden" id="album" name="album">
                         </div>
-                    </div>
+                        <button type="submit" class="sub btn btn-default">Add Record</button>
+                    </form>
                 </div>
+                <div class="col-md-3">
+                    <select class="pull-right" id="record_search" multiple="true" placeholder="Artist Search">
+                        <option></option>
+                        {% for a in artist %}
+                            <option>{{ a.artist }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!--<div class="record_input col-md-8 col-xs-12">
+                    <center>
+                        <form class="new_record form-inline" action="/submit/grid" method="post" role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="artist" name="artist" placeholder="Enter Artist Name">
+                            </div>
+                            <div class="form-group">
+                                <input type="hidden" id="album" name="album">
+                            </div>
+                            <button type="submit" class="sub btn btn-default">Add Record</button>
+                        </form>
+                    </center>
+                </div>
+                <div class="col-md-4 col-xs-3 pull-right">
+                    <select class="pull-right" id="record_search" multiple="true" placeholder="Artist Search">
+                        <option></option>
+                        {% for a in artist %}
+                        <option>{{ a.artist }}</option>
+                        {% endfor %}
+                    </select>
+                </div>-->
             </div>
         	{% block content %}
         	{% endblock %}
