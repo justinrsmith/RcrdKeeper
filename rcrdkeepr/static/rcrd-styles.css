@@ -56,7 +56,7 @@
   padding: 10px;
   margin-left: 10px;
 }
-
+/*
 .list_view {
   float: right;
 }
@@ -64,7 +64,7 @@
 .grid_view {
   float: right;
 }
-
+/*
 .view_holder {
   padding-right: 0px;
 }
@@ -72,7 +72,7 @@
 .refresh_holder {
   padding-left: 0px;
   padding-right: 0px;
-}
+}*/
 
 .album_options {
   padding-bottom: 10px;
@@ -85,11 +85,11 @@
 #issue_type {
   width: 200px;
 }
-
+/*
 .search {
   margin-left: 15px;
 }
-
+*/
 .select2-container {
     margin-bottom:9px;
 }
@@ -114,4 +114,12 @@
 .get_details {
     display:block;
     margin:auto;
+}
+
+.controls {
+  float: right;
+}
+
+.paginate_holder {
+  float: right;
 }

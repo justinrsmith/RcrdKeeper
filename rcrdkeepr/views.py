@@ -107,6 +107,7 @@ def login():
             error = 'Invalid password.'
         else:
             session['logged_in'] = True
+            print 'logged in'
             
             flash('You were logged in')
             return redirect('/home')

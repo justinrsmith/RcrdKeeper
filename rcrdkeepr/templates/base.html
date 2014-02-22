@@ -28,7 +28,7 @@
             <div class="col-md-2">
                 <h1>RcrdKeepr</h1>
             </div>
-            <div class="col-md-6 col-md-offset-4">
+            <div class="col-md-6 col-md-offset-4  hidden-xs">
                 <h1><small class="header">Vinyl Management powered by <img width="75" height="28" src='http://developer.rdio.com/files/RdioBlueLogo.png'></img></small></h1>
             </div> 
         </div>
@@ -43,9 +43,9 @@
                 </div>
             {% endif %}
         </div>
-            <div class="row" id="input">
+            <div class="row hidden-xs" id="input">
                 <div class="col-md-9">
-                    <form class="hidden-md new_record form-inline" action="/submit/grid" method="post" role="form">
+                    <form class="new_record form-inline" action="/submit/grid" method="post" role="form" style="visibility:hidden;">
                         <div class="form-group">
                             <input type="text" class="form-control" id="artist" name="artist" placeholder="Enter Artist Name">
                         </div>
@@ -55,7 +55,7 @@
                         <button type="submit" class="sub btn btn-default">Add Record</button>
                     </form>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 hidden-xs">
                     <select class="pull-right" id="record_search" multiple="true" placeholder="Artist Search">
                         <option></option>
                         {% for a in artist %}

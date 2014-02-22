@@ -221,8 +221,9 @@ $(document).on('click', '.list_view', function(e){
         $('.albums').empty()
         $('.albums').append(data)
         $(document).ready(function(){
-            $('.view_holder').empty()
-            $('.view_holder').append('<button type="button" class="grid_view btn btn-default btn-ms"> \
+            //$('.view_holder').empty()
+            $('.controls').children('.view').remove()
+            $('.controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
                     <span class="glyphicon glyphicon-th"></span> \
                 </button>')
         })
@@ -235,8 +236,9 @@ $(document).on('click', '.grid_view', function(e){
     $.get('/get_records/1', function(data){
         $('.albums').empty()
         $('.albums').append(data)
-        $('.view_holder').empty()
-        $('.view_holder').append('<button type="button" class="list_view btn btn-default btn-ms"> \
+        //$('.view_holder').empty()
+        $('.controls').children('.view').remove()
+        $('.controls').append('<button type="button" class="view list_view btn btn-default btn-ms"> \
                 <span class="glyphicon glyphicon-list"></span> \
             </button>')
     })
@@ -267,5 +269,15 @@ $(document).on('click', '#contact_sub', function(e){
 })
 
 $(document).on('click', '.add', function(){
-    $('.new_record.hidden-md').css('visibility','visible').hide().fadeIn('slow').removeClass('hidden-md')
+    $('#input').removeClass('hidden-xs')
+    $('.new_record').css('visibility','visible').hide().fadeIn('slow')
+    $(this).remove()
+    $('.add_button').append('<button class="btn btn-default btn-md hide_add"><span class="glyphicon glyphicon-minus"></span></button>')
+})
+
+$(document).on('click', '.hide_add', function(){
+    console.log('hi')
+    $('.new_record').css('visibility','hidden').hide().fadeOut('slow')
+    $(this).remove()
+    $('.add_button').append('<button class="btn btn-default btn-md hide_add"><span class="glyphicon glyphicon-plus"></span></button>')
 })
