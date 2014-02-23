@@ -217,6 +217,8 @@ $('.pagination .disabled a, .pagination .active a').on('click', function(e) {
 $(document).on('click', '.list_view', function(e){
     e.preventDefault()
 
+    $('.refresh').addClass('list')
+
     $.get('/list_records', function(data){
         $('.albums').empty()
         $('.albums').append(data)
@@ -247,10 +249,25 @@ $(document).on('click', '.grid_view', function(e){
 $(document).on('click', '.refresh', function(e){
     e.preventDefault()
 
-    $.get('/get_records/1', function(data){
-        $('.albums').empty()
-        $('.albums').append(data)
-    })
+    if(($(this).hasClass('list'))){
+        $.get('/list_records', function(data){
+            $('.albums').empty()
+            $('.albums').append(data)
+            $(document).ready(function(){
+                //$('.view_holder').empty()
+                $('.controls').children('.view').remove()
+                $('.controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
+                        <span class="glyphicon glyphicon-th"></span> \
+                    </button>')
+            })
+        })
+    }
+    else{
+        $.get('/get_records/1', function(data){
+            $('.albums').empty()
+            $('.albums').append(data)
+        })
+    }
 })
 
 $(document).on('click', '#contact_sub', function(e){

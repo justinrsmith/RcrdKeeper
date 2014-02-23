@@ -36,12 +36,12 @@ def before_request():
             return redirect('/home')
 
 
-@app.teardown_request
-def teardown_request(exception):
-    try:
-        g.rdb_conn.close()
-    except AttributeError:
-        pass
+#@app.teardown_request
+#def teardown_request(exception):
+#    try:
+#        g.rdb_conn.close()
+#    except AttributeError:
+#        pass
 
 
 @app.route('/register', methods=['POST'])
