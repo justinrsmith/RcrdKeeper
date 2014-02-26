@@ -293,8 +293,7 @@ $(document).on('click', '.add', function(){
 })
 
 $(document).on('click', '.hide_add', function(){
-    console.log('hi')
-    $('.new_record').css('visibility','hidden').hide().fadeOut('slow')
+    $('.new_record').fadeOut('slow')
     $(this).remove()
-    $('.add_button').append('<button class="btn btn-default btn-md hide_add"><span class="glyphicon glyphicon-plus"></span></button>')
+    $('.add_button').append('<button class="btn btn-default btn-md add"><span class="glyphicon glyphicon-plus"></span></button>')
 })
