@@ -95,10 +95,26 @@ $(document).ready(function(){
 
 $('#record_search').change(function(){
     var artist = $('#record_search option:selected').val()
-    $.get('/get_records/1/' + artist, function(data){
-        $('.albums').empty()
-        $('.albums').append(data)
-    })
+
+    if($(this).hasClass('list')){
+        $.get('/list_records/' + artist, function(data){
+            $('.albums').empty()
+            $('.albums').append(data)
+            $(document).ready(function(){
+                //$('.view_holder').empty()
+                $('.controls').children('.view').remove()
+                $('.controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
+                        <span class="glyphicon glyphicon-th"></span> \
+                    </button>')
+            })
+        })
+    }
+    else{
+        $.get('/get_records/1/' + artist, function(data){
+            $('.albums').empty()
+            $('.albums').append(data)
+        })
+    }
 })
 
 $(document).on('click', '.register', function(e){
@@ -218,6 +234,8 @@ $(document).on('click', '.list_view', function(e){
     e.preventDefault()
 
     $('.refresh').addClass('list')
+
+    $('#record_search').addClass('list')
 
     $.get('/list_records', function(data){
         $('.albums').empty()

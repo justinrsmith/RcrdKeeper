@@ -177,7 +177,8 @@ def get_records(page, artist=None):
 
 
 @app.route('/list_records', methods=['GET'])
-def list_records():
+@app.route('/list_records/<string:artist>', methods=['GET'])
+def list_records(artist=None):
 
     condition = list(r.table('record_condition').order_by(
                                     'order').run(g.rdb_conn))
@@ -185,9 +186,14 @@ def list_records():
     size = list(r.table('record_size').order_by(
                                     'order').run(g.rdb_conn))
 
-    selection = list(records.filter(
-        {'user':g.user}).order_by(
-                    'artist').run(g.rdb_conn))
+    if not artist:
+        selection = list(records.filter(
+            {'user':g.user}).order_by(
+                        'artist', 'album').run(g.rdb_conn))
+    else:
+        selection = list(records.filter(
+            {'user':g.user, 'artist': artist}).order_by(
+                        'artist', 'album').run(g.rdb_conn))
 
     return render_template('list_records.html',
                             selection=selection,
