@@ -163,6 +163,9 @@ def home(page=1):
 @app.route('/get_records/<int:page>/<string:artist>', methods=['GET'])
 def get_records(page, artist=None):
 
+    if artist == 'undefined':
+        artist = None
+
     if not artist:
         selection = list(records.filter({'user': g.user}).order_by(
                         'artist', 'album').skip((page-1)*16).limit(
@@ -180,6 +183,9 @@ def get_records(page, artist=None):
 @app.route('/list_records/<string:artist>', methods=['GET'])
 def list_records(artist=None):
 
+    if artist == 'undefined':
+        artist = None
+        
     condition = list(r.table('record_condition').order_by(
                                     'order').run(g.rdb_conn))
 
