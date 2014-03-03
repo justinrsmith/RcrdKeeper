@@ -107,7 +107,6 @@ def login():
             error = 'Invalid password.'
         else:
             session['logged_in'] = True
-            print 'logged in'
             
             flash('You were logged in')
             return redirect('/home')
@@ -136,8 +135,10 @@ def home(page=1):
         {'user':g.user}).order_by(
             'artist', 'album').skip((page-1)*16).limit(16).run(g.rdb_conn))
 
+    rec_count = records.filter({'user': g.user}).count().run(g.rdb_conn)
+
     status_next = None
-    if len(selection) <= 16:
+    if rec_count <= 16:
         status_next = 'disabled'
 
     status_prev = None
@@ -159,6 +160,9 @@ def home(page=1):
                             status_next=status_next,
                             status_prev=status_prev)
 
+
+
+
 @app.route('/get_records/<int:page>', methods=['GET'])
 @app.route('/get_records/<int:page>/<string:artist>', methods=['GET'])
 def get_records(page, artist=None):
@@ -170,6 +174,10 @@ def get_records(page, artist=None):
         selection = list(records.filter({'user': g.user}).order_by(
                         'artist', 'album').skip((page-1)*16).limit(
                             16).run(g.rdb_conn))
+        rec_count = records.filter(
+            {'user': g.user}).skip(
+             (page-1)*16).count().run(g.rdb_conn)
+
     else:
         selection = list(records.filter({
                         'user': g.user, 'artist': artist}).order_by(
@@ -210,8 +218,6 @@ def list_records(artist=None):
 @app.route('/submit/<string:location>', methods=['POST', 'GET'])
 def new_record(location):
 
-    print location
-
     new_info = query(request.form, 'insert')
 
     condition = list(r.table('record_condition').order_by(
@@ -237,7 +243,6 @@ def new_record(location):
 @app.route('/edit', methods=['POST'])
 def edit_record():
 
-    print request.form
     new_info = query(request.form, 'edit')
 
     return redirect('/')
@@ -416,5 +421,28 @@ def query(form, query_type):
         return {'artist': form['artist'],
                         'album': form['album'],
                             'album art': album_art}
+
+
+@app.route('/get_page/<int:page>')
+def get_page(page):
+
+    selection = list(records.filter({'user': g.user}).order_by(
+                    'artist', 'album').skip((page-1)*16).limit(
+                        16).run(g.rdb_conn))
+    rec_count = records.filter(
+        {'user': g.user}).skip(
+         (page-1)*16).count().run(g.rdb_conn)
+
+    status_next = None
+    if rec_count <= 16:
+        status_next = 'disabled'
+
+    status_prev = None
+    if page == 1:
+        status_prev = 'disabled'
+
+    return jsonify(status_prev=status_prev,
+                   status_next=status_next)
+
 
      

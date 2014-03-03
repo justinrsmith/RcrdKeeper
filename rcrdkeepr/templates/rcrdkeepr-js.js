@@ -125,8 +125,7 @@ $(document).on('click', '.register', function(e){
     var email = $(this).parent().siblings().children('.email').children('input')
     var valid_email = pattern.test(email.val())
     var form = $(this).parent('div').attr('id')
-    console.log(passwordVal.length)
-    console.log('hi')
+
     $('.error').hide()
     if (passwordVal == '') {
         $('#register_password').after('<span class="error">Please enter a password.</span>')
@@ -162,7 +161,6 @@ $(document).on('click', '.forgot_pw', function(e){
         type: 'POST',
         data: email,
         success: function(){
-            console.log('did it')
         }
     })
 })
@@ -204,31 +202,48 @@ $('#artist').change(function(){
     })
 })
 
+var page = 1
+
 //pagination
 $('.next').click(function(e){
     e.preventDefault()
-    var page = $('.link_next').attr('href').replace('/home/','')
     page++
-
-    $.get('/get_records/' + page, function(data){
-        $('.albums').empty()
-        $('.albums').append(data)
-    })
+    if($(this).hasClass('disabled')){
+        return false
+    }
+    else{
+        $.get('/get_records/' + page, function(data){
+            $('.albums').empty()
+            $('.albums').append(data)
+        })
+        get_page()
+    }
 })
 
 $('.previous').click(function(){
-    var page = $('.link_previous').attr('href').replace('/home/','')
     page--
-    
-    $.get('/get_records/' + page, function(data){
-        $('.albums').empty()
-        $('.albums').append(data)
-    })
+    if($(this).hasClass('disabled')){
+        return false
+    }
+    else{
+        $.get('/get_records/' + page, function(data){
+            $('.albums').empty()
+            $('.albums').append(data)
+        })
+        get_page()    
+    }
 })
 
-$('.pagination .disabled a, .pagination .active a').on('click', function(e) {
-    e.preventDefault()
-})
+var get_page = function(){
+    $.get('/get_page/' + page, function(data){
+        if(data['status_next'] == 'disabled'){
+            $('.next').addClass('disabled')
+        }
+        if(data['status_prev'] === null){
+            $('.previous').removeClass('disabled')
+        }
+    })
+}
 
 $(document).on('click', '.list_view', function(e){
     e.preventDefault()
@@ -236,6 +251,8 @@ $(document).on('click', '.list_view', function(e){
     $('.refresh').addClass('list')
 
     $('#record_search').addClass('list')
+
+    $('.paginate_holder').hide()
 
     $.get('/list_records', function(data){
         $('.albums').empty()
@@ -252,6 +269,8 @@ $(document).on('click', '.list_view', function(e){
 
 $(document).on('click', '.grid_view', function(e){
     e.preventDefault()
+
+    $('.paginate_holder').show()
 
     $.get('/get_records/1', function(data){
         $('.albums').empty()
