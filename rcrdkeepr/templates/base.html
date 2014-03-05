@@ -45,6 +45,7 @@
         </div>
             <div class="row hidden-xs" id="input">
                 <div class="hidden-xs col-md-9">
+                    <div class="alert alert-success" id="welcome">Welcome back, {{ user_name }}</div>
                     <form class="new_record form-inline" action="/submit/grid" method="post" role="form" style="visibility:hidden;">
                         <div class="form-group">
                             <input type="text" class="form-control" id="artist" name="artist" placeholder="Enter Artist Name">

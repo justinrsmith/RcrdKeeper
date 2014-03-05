@@ -130,4 +130,11 @@
 
 .new_record {
   margin-bottom: 0px;
+  height: 0px;
+}
+
+#welcome {
+  padding: 7px;
+  height: 34px;
+  margin: 0px;
 }

@@ -1,8 +1,9 @@
 $('.sub').click(function(e){
     e.preventDefault()
-    var artist = $(this).parents('div.record_input').find('#artist').val()
-    var album = $(this).parents('div.record_input').find('#album').val()
-
+    var artist = $('#artist').val()
+    var album = $('#album').val()
+    console.log(artist)
+    console.log(album)
     if($('.albums').find('table.list').attr('class') !== undefined){
         $('.new_record').attr('action', '/submit/list')
 
@@ -323,6 +324,7 @@ $(document).on('click', '#contact_sub', function(e){
 })
 
 $(document).on('click', '.add', function(){
+    $('#welcome').remove()
     $('#input').removeClass('hidden-xs').children('div:first').removeClass('hidden-xs')
     $('.new_record').css('visibility','visible').hide().fadeIn('slow')
     $(this).removeClass('add')

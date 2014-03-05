@@ -61,7 +61,9 @@ def register():
         else:
             hash_pw = generate_password_hash(request.form['register_password'])
 
-            response = users.insert({'email': request.form['email'],
+            response = users.insert({
+                          'name': request.form['name'],
+                          'email': request.form['email'],
                           'password': hash_pw,
                           'birthdate': request.form['birthdate'],
                           'key': None}).run(g.rdb_conn)
@@ -94,6 +96,7 @@ def login():
             email = c['email']
             password = c['password']
             session['user'] = c['id']
+            session['user_full_name'] = c['name']
 
         if not 'email' in locals():
             email = None
@@ -158,7 +161,8 @@ def home(page=1):
                             size=size,
                             page=page,
                             status_next=status_next,
-                            status_prev=status_prev)
+                            status_prev=status_prev,
+                            user_name = session['user_full_name'])
 
 
 
