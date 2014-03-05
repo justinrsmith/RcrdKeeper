@@ -102,8 +102,8 @@ $('#record_search').change(function(){
             $('.albums').append(data)
             $(document).ready(function(){
                 //$('.view_holder').empty()
-                $('.controls').children('.view').remove()
-                $('.controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
+                $('.view_controls').children('.view').remove()
+                $('.view_controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
                         <span class="glyphicon glyphicon-th"></span> \
                     </button>')
             })
@@ -259,8 +259,8 @@ $(document).on('click', '.list_view', function(e){
         $('.albums').append(data)
         $(document).ready(function(){
             //$('.view_holder').empty()
-            $('.controls').children('.view').remove()
-            $('.controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
+            $('.view_controls').children('.view').remove()
+            $('.view_controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
                     <span class="glyphicon glyphicon-th"></span> \
                 </button>')
         })
@@ -276,8 +276,8 @@ $(document).on('click', '.grid_view', function(e){
         $('.albums').empty()
         $('.albums').append(data)
         //$('.view_holder').empty()
-        $('.controls').children('.view').remove()
-        $('.controls').append('<button type="button" class="view list_view btn btn-default btn-ms"> \
+        $('.view_controls').children('.view').remove()
+        $('.view_controls').append('<button type="button" class="view list_view btn btn-default btn-ms"> \
                 <span class="glyphicon glyphicon-list"></span> \
             </button>')
     })
@@ -292,8 +292,8 @@ $(document).on('click', '.refresh', function(e){
             $('.albums').append(data)
             $(document).ready(function(){
                 //$('.view_holder').empty()
-                $('.controls').children('.view').remove()
-                $('.controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
+                $('.view_controls').children('.view').remove()
+                $('.view_controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
                         <span class="glyphicon glyphicon-th"></span> \
                     </button>')
             })
@@ -323,7 +323,7 @@ $(document).on('click', '#contact_sub', function(e){
 })
 
 $(document).on('click', '.add', function(){
-    $('#input').removeClass('hidden-xs')
+    $('#input').removeClass('hidden-xs').children('div:first').removeClass('hidden-xs')
     $('.new_record').css('visibility','visible').hide().fadeIn('slow')
     $(this).remove()
     $('.add_button').append('<button class="btn btn-default btn-md hide_add"><span class="glyphicon glyphicon-minus"></span></button>')
@@ -334,3 +334,9 @@ $(document).on('click', '.hide_add', function(){
     $(this).remove()
     $('.add_button').append('<button class="btn btn-default btn-md add"><span class="glyphicon glyphicon-plus"></span></button>')
 })
+
+$(document).on('click', '.search_mobile', function(){
+    $('#record_search').parents('div').removeClass('hidden-xs')
+    $('#record_search').css('visibility','visible').hide().fadeIn('slow')
+})
+
