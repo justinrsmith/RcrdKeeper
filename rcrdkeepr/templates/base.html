@@ -55,35 +55,14 @@
                         <button type="submit" class="sub btn btn-default">Add Record</button>
                     </form>
                 </div>
-                <div class="col-md-3 hidden-xs">
-                    <select class="pull-right" id="record_search" multiple="true" placeholder="Artist Search">
+                <div class="col-md-3 hidden-xs text-center">
+                    <select class="" id="record_search" multiple="true" placeholder="Artist Search">
                         <option></option>
                         {% for a in artist %}
                             <option>{{ a.artist }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <!--<div class="record_input col-md-8 col-xs-12">
-                    <center>
-                        <form class="new_record form-inline" action="/submit/grid" method="post" role="form">
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="artist" name="artist" placeholder="Enter Artist Name">
-                            </div>
-                            <div class="form-group">
-                                <input type="hidden" id="album" name="album">
-                            </div>
-                            <button type="submit" class="sub btn btn-default">Add Record</button>
-                        </form>
-                    </center>
-                </div>
-                <div class="col-md-4 col-xs-3 pull-right">
-                    <select class="pull-right" id="record_search" multiple="true" placeholder="Artist Search">
-                        <option></option>
-                        {% for a in artist %}
-                        <option>{{ a.artist }}</option>
-                        {% endfor %}
-                    </select>
-                </div>-->
             </div>
         	{% block content %}
         	{% endblock %}

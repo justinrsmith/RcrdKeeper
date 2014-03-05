@@ -325,18 +325,42 @@ $(document).on('click', '#contact_sub', function(e){
 $(document).on('click', '.add', function(){
     $('#input').removeClass('hidden-xs').children('div:first').removeClass('hidden-xs')
     $('.new_record').css('visibility','visible').hide().fadeIn('slow')
-    $(this).remove()
-    $('.add_button').append('<button class="btn btn-default btn-md hide_add"><span class="glyphicon glyphicon-minus"></span></button>')
+    $(this).removeClass('add')
+    $(this).addClass('hide_add')
+    $(this).children('span').remove()
+    $(this).append('<span class="glyphicon glyphicon-minus"></span>')
+
+    //$('.add_button').append('<button class="btn btn-default btn-md hide_add"><span class="glyphicon glyphicon-minus"></span></button>')
 })
 
 $(document).on('click', '.hide_add', function(){
     $('.new_record').fadeOut('slow')
-    $(this).remove()
-    $('.add_button').append('<button class="btn btn-default btn-md add"><span class="glyphicon glyphicon-plus"></span></button>')
+    $(this).removeClass('hide_add')
+    $(this).addClass('add')
+    $(this).children('span').remove()
+    $(this).append('<span class="glyphicon glyphicon-plus"></span>')
+    //$('.add_button').append('<button class="btn btn-default btn-md add"><span class="glyphicon glyphicon-plus"></span></button>')
 })
 
 $(document).on('click', '.search_mobile', function(){
-    $('#record_search').parents('div').removeClass('hidden-xs')
-    $('#record_search').css('visibility','visible').hide().fadeIn('slow')
+    //$('#record_search').parents('div').removeClass('hidden-xs')
+
+    if($(this).hasClass('hide_search')){
+        $('#record_search').parent('div').addClass('hidden-xs')
+        $('#record_search').parent('div').fadeOut('slow')
+        $(this).removeClass('hide_search')
+        $('#record_search').parent('div').addClass('hidden-xs')
+        console.log('if')
+        console.log($(this).attr('class'))
+        //alert('hi')
+    }
+    else{
+        $('#record_search').parents('div').removeClass('hidden-xs')
+        $('#record_search').css('visibility','visible').hide().fadeIn('slow')
+        $(this).addClass('hide_search')
+        console.log('else')
+        console.log($(this).attr('class'))
+    }
+    
 })
 

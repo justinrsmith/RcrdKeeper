@@ -3,7 +3,7 @@
 		<tr>
 			<th>Artist</th>
 			<th>Album</th>
-			<th>Release Date</th>
+			<th class="hidden-xs">Release Date</th>
 			<th></th>
 			<th></th>
 		</tr>
@@ -11,7 +11,7 @@
 			<tr id="{{ s['id'] }}">
 				<td>{{s.artist}}</td>
 				<td>{{s.album}}</td>
-				<td>{{s.release_date}}
+				<td class="hidden-xs">{{s.release_date}}
 				<td>
 					<a data-toggle="modal" href="#editModal{{ s['id'] }}">
 	    				<span class="glyphicon glyphicon-pencil"></span>
