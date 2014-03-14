@@ -2,8 +2,7 @@ $('.sub').click(function(e){
     e.preventDefault()
     var artist = $('#artist').val()
     var album = $('#album').val()
-    console.log(artist)
-    console.log(album)
+
     if($('.albums').find('table.list').attr('class') !== undefined){
         $('.new_record').attr('action', '/submit/list')
 
@@ -13,16 +12,22 @@ $('.sub').click(function(e){
                 $('.data').empty()
                 $('.data').append(artist + ' - ' + album)
                 $('.record_added').fadeIn('slow').delay(3000).fadeOut('slow')
+                $('#artist').val('')
+                $('#album').select2('data', null)
+                $('#album').prop('disabled', true)
             }
         })
     }
     else{
         $('.new_record').ajaxSubmit({
             success: function(data){
-                $('.albums').append(data)
+                var that = $('.albums').append(data)
                 $('.data').empty()
                 $('.data').append(artist + ' - ' + album)
                 $('.record_added').fadeIn('slow').delay(3000).fadeOut('slow')
+                $('#artist').val('')
+                $('#album').select2('data', null)
+                $('#album').prop('disabled', true)
             }
         })
     }
@@ -325,6 +330,7 @@ $(document).on('click', '#contact_sub', function(e){
 
 $(document).on('click', '.add', function(){
     $('#welcome').remove()
+    $('.new_record').css('height', 'auto')
     $('#input').removeClass('hidden-xs').children('div:first').removeClass('hidden-xs')
     $('.new_record').css('visibility','visible').hide().fadeIn('slow')
     $(this).removeClass('add')

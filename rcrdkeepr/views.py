@@ -79,7 +79,7 @@ def register():
                 emails.send_email('RcrdKeepr Registration Confirmation','flasktesting33@gmail.com',
                                     request.form['email'], email_message)
          
-        return render_template('home.html', succ=succ)
+        return render_template('home.html', succ=succ, first_login=True)
 
 
 @app.route('/', methods=['GET', 'POST'])

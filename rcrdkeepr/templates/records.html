@@ -11,7 +11,7 @@
 	        </a>
 	    </div>
 
-		<img class="get_details {{ s['id'] }}" id="{{ s['id'] }}"
+		<img class="hidden-xs get_details {{ s['id'] }}" id="{{ s['id'] }}"
 		src="
 		{% if s['user_artwork'] == '' %}
 			{{ s['album art'] }}
@@ -19,6 +19,14 @@
 			{{ s['user_artwork'] }}
 		{% endif %} " 
 		width="200" height="200" data-toggle="tooltip" data-placement="top" title='{{ s.artist }} - {{ s.album }}'></img>  
+		<img class="visible-xs get_details {{ s['id'] }}" id="{{ s['id'] }}"
+		src="
+		{% if s['user_artwork'] == '' %}
+			{{ s['album art'] }}
+		{% else %}
+			{{ s['user_artwork'] }}
+		{% endif %} " 
+		width="200" height="200"></img>  
 	</div>
 	
 	{% include 'modals.html' %}
