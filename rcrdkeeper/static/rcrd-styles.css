@@ -1,0 +1,140 @@
+.header {
+    float: right;
+}
+
+.alert_area {
+    display: none;
+}
+
+.select2-container {
+  width: 250px;
+}
+
+.login_control {
+    padding-top: 10px;
+}
+
+.or {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.album_row {
+    padding-bottom: 40px;
+}
+
+.album {
+    padding-bottom: 40px;
+}
+
+.page-header {
+    margin: 10px 0 20px;
+}
+
+#input {
+  padding-bottom: 20px;
+}
+
+.quick_link{
+  padding-left: 15px;
+  float: right;
+}
+
+#comment {
+    height: 200px;
+    width: 300px;
+}
+
+#notification {
+  display: none;
+  width: 300px;
+  position: fixed;
+  bottom: 0;
+  z-index: 500;
+  background: #f5f5f5;
+  border: 3px solid #80b7ed;
+  padding: 10px;
+  margin-left: 10px;
+}
+/*
+.list_view {
+  float: right;
+}
+
+.grid_view {
+  float: right;
+}
+/*
+.view_holder {
+  padding-right: 0px;
+}
+
+.refresh_holder {
+  padding-left: 0px;
+  padding-right: 0px;
+}*/
+
+.album_options {
+  padding-bottom: 10px;
+}
+
+.desc {
+  padding-left: 25px;
+}
+
+#issue_type {
+  width: 200px;
+}
+/*
+.search {
+  margin-left: 15px;
+}
+*/
+.select2-container {
+    margin-bottom:9px;
+}
+
+.select2-container-multi .select2-choices {
+    height: 20px;
+    font-size: 14px;
+    line-height: 20px;
+    border: 1px solid #CCCCCC;
+    color: #555555;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.select2-container-multi.select2-dropdown-open .select2-choices {
+    -webkit-border-radius: 3px 3px 0 0;
+    -moz-border-radius: 3px 3px 0 0;
+    border-radius: 3px 3px 0 0;
+}
+
+.get_details {
+    display:block;
+    margin:auto;
+}
+
+.view_controls {
+  float: right;
+}
+
+.paginate_holder {
+  float: right;
+}
+
+.record_hold {
+  padding-top: 15px;
+}
+
+.new_record {
+  margin-bottom: 0px;
+  height: 0px;
+}
+
+#welcome {
+  padding: 7px;
+  height: 34px;
+  margin: 0px;
+}
