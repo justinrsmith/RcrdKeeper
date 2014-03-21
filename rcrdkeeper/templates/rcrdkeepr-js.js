@@ -40,16 +40,39 @@ $(document).on('dblclick', '.get_details', function(){
 
 $('.get_details').tooltip({trigger: 'hover'})
 
-$('.save_edit').click(function(e){
+$(document).on('click', '.save_edit', function(e){
     e.preventDefault()
-
-    var id = $(this).attr('id')
+    var that = $(this)
+    var id
     $(this).parents('.edit_record').ajaxSubmit({
         success: function(data){
+            id = $(this).attr('id')
             $('.'+id).attr('src', data)
-            window.location.reload()
+            if($(that).parents('div.modal').hasClass('list')){
+                $.get('/list_records', function(data){
+                    $('.albums').empty()
+                    $('.albums').append(data)
+                    $(document).ready(function(){
+                        $('.view_controls').children('.view').remove()
+                        $('.view_controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
+                                <span class="glyphicon glyphicon-th"></span> \
+                            </button>')
+                    })
+                })
+            }
+            else{
+                $.get('/get_records/1', function(data){
+                    $('.albums').empty()
+                    $('.albums').append(data)
+                    $('.view_controls').children('.view').remove()
+                    $('.view_controls').append('<button type="button" class="view list_view btn btn-default btn-ms"> \
+                            <span class="glyphicon glyphicon-list"></span> \
+                        </button>')
+                })
+            }
         }
     })
+    $('.modal').modal('hide')
 })
 
 $(document).on('click' ,'.delete', function(){
@@ -107,7 +130,6 @@ $('#record_search').change(function(){
             $('.albums').empty()
             $('.albums').append(data)
             $(document).ready(function(){
-                //$('.view_holder').empty()
                 $('.view_controls').children('.view').remove()
                 $('.view_controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
                         <span class="glyphicon glyphicon-th"></span> \
@@ -264,7 +286,6 @@ $(document).on('click', '.list_view', function(e){
         $('.albums').empty()
         $('.albums').append(data)
         $(document).ready(function(){
-            //$('.view_holder').empty()
             $('.view_controls').children('.view').remove()
             $('.view_controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
                     <span class="glyphicon glyphicon-th"></span> \
@@ -281,7 +302,6 @@ $(document).on('click', '.grid_view', function(e){
     $.get('/get_records/1', function(data){
         $('.albums').empty()
         $('.albums').append(data)
-        //$('.view_holder').empty()
         $('.view_controls').children('.view').remove()
         $('.view_controls').append('<button type="button" class="view list_view btn btn-default btn-ms"> \
                 <span class="glyphicon glyphicon-list"></span> \
@@ -297,7 +317,6 @@ $(document).on('click', '.refresh', function(e){
             $('.albums').empty()
             $('.albums').append(data)
             $(document).ready(function(){
-                //$('.view_holder').empty()
                 $('.view_controls').children('.view').remove()
                 $('.view_controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
                         <span class="glyphicon glyphicon-th"></span> \
@@ -337,8 +356,6 @@ $(document).on('click', '.add', function(){
     $(this).addClass('hide_add')
     $(this).children('span').remove()
     $(this).append('<span class="glyphicon glyphicon-minus"></span>')
-
-    //$('.add_button').append('<button class="btn btn-default btn-md hide_add"><span class="glyphicon glyphicon-minus"></span></button>')
 })
 
 $(document).on('click', '.hide_add', function(){
@@ -347,28 +364,21 @@ $(document).on('click', '.hide_add', function(){
     $(this).addClass('add')
     $(this).children('span').remove()
     $(this).append('<span class="glyphicon glyphicon-plus"></span>')
-    //$('.add_button').append('<button class="btn btn-default btn-md add"><span class="glyphicon glyphicon-plus"></span></button>')
 })
 
 $(document).on('click', '.search_mobile', function(){
-    //$('#record_search').parents('div').removeClass('hidden-xs')
-
     if($(this).hasClass('hide_search')){
         $('#record_search').parent('div').addClass('hidden-xs')
         $('#record_search').parent('div').fadeOut('slow')
         $(this).removeClass('hide_search')
         $('#record_search').parent('div').addClass('hidden-xs')
-        console.log('if')
-        console.log($(this).attr('class'))
-        //alert('hi')
+
     }
     else{
         $('#record_search').parents('div').removeClass('hidden-xs')
         $('#record_search').css('visibility','visible').hide().fadeIn('slow')
         $(this).addClass('hide_search')
-        console.log('else')
-        console.log($(this).attr('class'))
     }
-    
 })
+
 

@@ -13,7 +13,7 @@
   				  	  	<dt>Why does my album come up with no information?</dt>
   				  		    <dd class="desc">Being powered by Rdio means being limited to information only available in the Rdio catalog (which still includes 18 million+ songs).</dd>
 			  		  	<dt>Can I add my own infomation to an album?</dt>
-			  			    <dd class="desc">Yes, whether you want to add it because Rdio does not have it available or you want to do customization all records are editable. Be clicking the pencil above the record you get a pop-up of options that can be modified.</dd>
+			  			    <dd class="desc">Yes, whether you want to add it because Rdio does not have it available or you want to do customization all records are editable. By clicking the pencil above the record you get a pop-up of options that can be modified.</dd>
 	  				    <dt>I would like to make a suggestion.</dt>
 	  				  	    <dd class="desc">Great! All suggestions to improve the user experience are welcome just select 'Contact' from above and for issue type select Suggestion and fill out what it is you would like and it will be taken into consideration.</dd>
 			  		  	<dt>I have encountered an error.</dt>
@@ -31,6 +31,8 @@
 	  			$('.input_data').parents('div.panel').hide()
 	  			$('#logout').empty().append('Home')
 	  			$('#logout').attr('href', '/home')
+	  			$('#welcome').hide()
+	  			$('#record_search').hide()
 	  		</script>
 		</div>
 	</div>

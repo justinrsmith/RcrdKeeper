@@ -36,12 +36,12 @@ def before_request():
             return redirect('/home')
 
 
-#@app.teardown_request
-#def teardown_request(exception):
-#    try:
-#        g.rdb_conn.close()
-#    except AttributeError:
-#        pass
+@app.teardown_request
+def teardown_request(exception):
+    try:
+        g.rdb_conn.close()
+    except AttributeError:
+        pass
 
 
 @app.route('/register', methods=['POST'])
@@ -187,8 +187,16 @@ def get_records(page, artist=None):
                         'user': g.user, 'artist': artist}).order_by(
                         'artist', 'album').limit(16).run(g.rdb_conn))
 
+    condition = list(r.table('record_condition').order_by(
+                                    'order').run(g.rdb_conn))
+
+    size = list(r.table('record_size').order_by(
+                                    'order').run(g.rdb_conn))
+
     return render_template('records.html',
-                            selection=selection)
+                            selection=selection,
+                            condition=condition,
+                            size=size)
 
 
 @app.route('/list_records', methods=['GET'])
