@@ -12,6 +12,12 @@
     <link rel="stylesheet" type="text/css" href="../static/rcrd-styles.css">
     <link rel="stylesheet" type="text/css" href="../static/select2-3.4.5/select2.css">
 
+
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static',filename='AppIcon57x57.png')}}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static',filename='AppIcon72x72.png')}}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for('static',filename='AppIcon114x114.png')}}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for('static',filename='AppIcon144x144.png')}}">
+
     <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1, user-scalable=no">
 </head>
 
@@ -80,6 +86,11 @@
 <div class="record_deleted" id="notification">
         <h3>Record Deleted</h3>
         <p><marking class="data"></marking> has been successfully deleted from RcrdKeepr.</p>
+</div>
+
+<div class="password_reset" id="notification">
+        <h3>Password reset</h3>
+        <p>An email to complete reset process has been sent to <marking class="data"></marking>.</p>
 </div>
 
 <script>

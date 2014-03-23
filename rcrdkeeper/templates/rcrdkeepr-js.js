@@ -177,7 +177,7 @@ $(document).on('click', '.register', function(e){
 })
 
 $(function (){
-    $("#example").popover()
+    $("#password_forgot").popover()
 })
 
 $(document).on('click', '.forgot_pw', function(e){
@@ -191,6 +191,11 @@ $(document).on('click', '.forgot_pw', function(e){
         success: function(){
         }
     })
+    console.log(email)
+    $('#password_forgot').popover('hide')
+    $('.data').empty()
+    $('.data').append(email['email'])
+    $('.password_reset').fadeIn('slow').delay(3000).fadeOut('slow')
 })
 
 $('#artist').change(function(){
@@ -298,6 +303,8 @@ $(document).on('click', '.grid_view', function(e){
     e.preventDefault()
 
     $('.paginate_holder').show()
+
+    $('.refresh').removeClass('list')
 
     $.get('/get_records/1', function(data){
         $('.albums').empty()

@@ -9,7 +9,7 @@ RCRDKEEPER_DB = 'rcrdkeeper'
 def dbSetup():
     connection = r.connect(host='localhost', port=28015)
     try:
-        r.db_create(RCRDKEEPER).run(connection)
+        r.db_create(RCRDKEEPER_DB).run(connection)
         r.db(RCRDKEEPER_DB).table_create('records').run(connection)
         r.db(RCRDKEEPER_DB).table_create('users').run(connection)
         r.db(RCRDKEEPER_DB).table_create('record_condition').run(connection)
@@ -38,4 +38,4 @@ if __name__ == "__main__":
     if args.run_setup:
         dbSetup()
     else:
-        app.run(host='10.0.0.8', port=4000, debug=True)
+        app.run(host='10.0.0.9', port=4000, debug=True)

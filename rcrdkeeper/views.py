@@ -1,5 +1,5 @@
 from rcrdkeeper import app
-from flask import g, render_template, request, jsonify, flash, session, redirect, abort
+from flask import g, render_template, request, jsonify, session, redirect, abort
 import json
 import rethinkdb as r
 from rethinkdb.errors import RqlRuntimeError, RqlDriverError
@@ -39,7 +39,7 @@ def before_request():
 @app.teardown_request
 def teardown_request(exception):
     try:
-        g.rdb_conn.close()
+        g.rdb_conn.close(noreply_wait=False)
     except AttributeError:
         pass
 
@@ -68,7 +68,7 @@ def register():
                           'birthdate': request.form['birthdate'],
                           'key': None}).run(g.rdb_conn)
 
-            email_message = 'Thank you for registering with RcrdKeeper.'
+            email_message = 'Thank you for registering with RcrdKeeper. No further action is required to use your account.'
 
             session['user'] = response['generated_keys'][0]
 
@@ -76,7 +76,7 @@ def register():
                 confirmation email shortly.'
 
             if response['inserted'] == 1:
-                emails.send_email('RcrdKeeper Registration Confirmation','flasktesting33@gmail.com',
+                emails.send_email('RcrdKeeper Registration Confirmation',app.config['MAIL_USERNAME'],
                                     request.form['email'], email_message)
          
         return render_template('home.html', succ=succ, first_login=True)
@@ -111,7 +111,6 @@ def login():
         else:
             session['logged_in'] = True
             
-            flash('You were logged in')
             return redirect('/home')
     return render_template('login.html', error=error)
 
@@ -120,7 +119,6 @@ def logout():
 
     session.pop('logged_in', None)
     session.pop('user', None)
-    flash('You were logged out')
     return redirect('/')
 
 @app.route('/home', methods=['GET'])
@@ -163,8 +161,6 @@ def home(page=1):
                             status_next=status_next,
                             status_prev=status_prev,
                             user_name = session['user_full_name'])
-
-
 
 
 @app.route('/get_records/<int:page>', methods=['GET'])
@@ -298,9 +294,9 @@ def forgot():
             
             users.get(email_exist['id']).update({'key': key}).run(g.rdb_conn)
         
-            email_message = 'Follow the below link to reset 10.0.0.8:4000/reset/' + key
+            email_message = 'This email has receieved a request to reset password for RcrdKeeper. Follow the below link to reset 10.0.0.8:4000/reset/' + key
 
-            emails.send_email('RcrdKeeper Account Recovery','flasktesting33@gmail.com',
+            emails.send_email('RcrdKeeper Account Recovery',app.config['MAIL_USERNAME'],
                                 email_exist['email'], email_message)
 
     return ''
@@ -310,20 +306,26 @@ def forgot():
 @app.route('/reset/<string:key>', methods=['POST', 'GET'])
 def reset(key=None):
 
-    if key:
+    key_exists = users.filter({'key': key}).count().run(g.rdb_conn)
+
+    if not key_exists == 0:
         user = list(users.filter({'key': key}).run(g.rdb_conn)).pop()
-        session['user'] = user['id']
 
-    if request.method == 'POST':
-        hash_pw = generate_password_hash(request.form['verify_password'])
-        users.get(session['user']).update({
-            'password': hash_pw, 'key': None}).run(g.rdb_conn)
-        session['logged_in'] = True
+        if request.method == 'POST':
 
+            hash_pw = generate_password_hash(request.form['verify_password'])
+            users.get(user['id']).update({
+                'password': hash_pw, 'key': None}).run(g.rdb_conn)
+            session['logged_in'] = True
+            session['user_full_name'] = str(users['name'])
+            
+            succ = 'Your password has been reset, you may now login.'
+            return render_template('login.html',succ=succ)
+    else:
         return redirect('/')
 
-    return render_template('reset.html')
-
+    return render_template('reset.html',
+                            key=key)
 
 @app.route('/contact', methods=['POST', 'GET'])
 def contact():

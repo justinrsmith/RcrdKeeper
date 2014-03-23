@@ -2,9 +2,11 @@
 {% block content %}
 
     <script>
-        $(document).ready(function(){
-            $('#logout').hide()
-        })
+        $('.input_data').parents('div.panel').hide()
+        $('#logout').empty().append('Home')
+        $('#logout').attr('href', '/home')
+        $('#welcome').hide()
+        $('#record_search').hide()
     </script>
 
     {% if error %}
@@ -16,7 +18,7 @@
     {% endif %}
 
     <div class="col-md-6 col-md-offset-3 well">
-        <form class="form" action='/reset' method="post">
+        <form class="form" action='/reset/{{key}}' method="post">
             <div class="row">
                 <div class="col-md-6 col-md-offset-3">
                     <input type="password" id="register_password" name="register_password" class="form-control" placeholder="New Password" autofocus><br>

@@ -16,8 +16,8 @@ app.config.update(
     MAIL_SERVER = 'smtp.gmail.com',
     MAIL_PORT = 465,
     MAIL_USE_SSL = True,
-    MAIL_USERNAME = 'flasktesting33@gmail.com',
-    MAIL_PASSWORD = 'testpw2013'
+    MAIL_USERNAME = 'rcrdkeeper@gmail.com',
+    MAIL_PASSWORD = '**'
 )
 
 mail = Mail(app)
