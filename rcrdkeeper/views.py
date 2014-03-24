@@ -401,7 +401,8 @@ def query(form, query_type):
         artist_key = ''
 
     if query_type == 'insert':
-        succ = records.insert([{'user': g.user,
+
+        succ = records.insert([{'user': session['user'],
                                 'artist': form['artist'],
                                 'album': form['album'],
                                 'album art': album_art,
