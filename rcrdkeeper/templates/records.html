@@ -26,7 +26,11 @@
 		{% else %}
 			{{ s['user_artwork'] }}
 		{% endif %} " 
-		width="200" height="200"></img>  
+		width="200" height="200"></img>
+		<div class="text-center visible-xs">
+			{{ s.artist }}<br>
+			{{ s.album }}
+		</div>  
 	</div>
 	
 	{% include 'modals.html' %}
