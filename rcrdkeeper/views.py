@@ -110,8 +110,12 @@ def login():
 
         if request.form['email'] != email:
             error = 'Email address does not exist.'
+            session['logged_in'] = False
+            session.clear()
         elif not valid_password:
             error = 'Invalid password.'
+            session['logged_in'] = False
+            session.clear()
         else:
             session['logged_in'] = True
             
@@ -123,6 +127,7 @@ def logout():
 
     session.pop('logged_in', None)
     session.pop('user', None)
+    session.clear()
     return redirect('/')
 
 @app.route('/home', methods=['GET'])
