@@ -70,8 +70,7 @@ def register():
                           'birthdate': request.form['birthdate'],
                           'key': None}).run(g.rdb_conn)
 
-            email_message = 'Thank you for registering with RcrdKeeper. \
-                No further action is required to use your account.'
+            email_message = 'Thank you for registering with RcrdKeeper. No further action is required to use your account.'
 
             session['user'] = response['generated_keys'][0]
 
@@ -301,9 +300,7 @@ def forgot():
             
             users.get(email_exist['id']).update({'key': key}).run(g.rdb_conn)
         
-            email_message = 'This email has receieved a request to reset \
-                password for RcrdKeeper. \
-                Follow the below link to reset 10.0.0.8:4000/reset/' + key
+            email_message = 'This email has receieved a request to reset password for RcrdKeeper. Follow the below link to reset rcrdkeeper.com/reset/' + key
 
             emails.send_email('RcrdKeeper Account Recovery',
                                 app.config['MAIL_USERNAME'],
