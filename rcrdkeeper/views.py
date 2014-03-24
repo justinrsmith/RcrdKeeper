@@ -51,7 +51,8 @@ def register():
 
     if request.method == 'POST':
 
-        user_exist = list(users.filter({'email': request.form['email']}).run(g.rdb_conn))
+        user_exist = list(users.filter(
+            {'email': request.form['email']}).run(g.rdb_conn))
 
         if user_exist:
             error = "Account with this email already exist. \
@@ -59,7 +60,8 @@ def register():
 
             return render_template('login.html', error=error)
         else:
-            hash_pw = generate_password_hash(request.form['register_password'])
+            hash_pw = generate_password_hash(
+                request.form['register_password'])
 
             response = users.insert({
                           'name': request.form['name'],
@@ -68,16 +70,18 @@ def register():
                           'birthdate': request.form['birthdate'],
                           'key': None}).run(g.rdb_conn)
 
-            email_message = 'Thank you for registering with RcrdKeeper. No further action is required to use your account.'
+            email_message = 'Thank you for registering with RcrdKeeper. \
+                No further action is required to use your account.'
 
             session['user'] = response['generated_keys'][0]
 
-            succ = 'Account successfully created. You are now logged in. You will recieve a \
-                confirmation email shortly.'
+            succ = 'Account successfully created. You are now logged in. \
+                You will recieve a confirmation email shortly.'
 
             if response['inserted'] == 1:
-                emails.send_email('RcrdKeeper Registration Confirmation',app.config['MAIL_USERNAME'],
-                                    request.form['email'], email_message)
+                emails.send_email('RcrdKeeper Registration Confirmation',
+                    app.config['MAIL_USERNAME'],
+                    request.form['email'], email_message)
          
         return render_template('home.html', succ=succ, first_login=True)
 
@@ -102,7 +106,8 @@ def login():
             email = None
             password = None
         else:
-            valid_password = check_password_hash(password, request.form['password'])
+            valid_password = check_password_hash(
+                password, request.form['password'])
 
         if request.form['email'] != email:
             error = 'Email address does not exist.'
@@ -128,9 +133,11 @@ def home(page=1):
     if not session.get('logged_in'):
         return render_template('login.html')
     artist = list(records.filter({
-                        'user':g.user}).order_by('artist').pluck('artist').run(g.rdb_conn))
+                        'user':g.user}).order_by(
+                        'artist').pluck('artist').run(g.rdb_conn))
 
-    artist = [dict(tupleized) for tupleized in set(tuple(item.items()) for item in artist)]
+    artist = [dict(tupleized) for tupleized in set(
+                        tuple(item.items()) for item in artist)]
 
     selection = list(records.filter(
         {'user':g.user}).order_by(
@@ -294,10 +301,14 @@ def forgot():
             
             users.get(email_exist['id']).update({'key': key}).run(g.rdb_conn)
         
-            email_message = 'This email has receieved a request to reset password for RcrdKeeper. Follow the below link to reset 10.0.0.8:4000/reset/' + key
+            email_message = 'This email has receieved a request to reset \
+                password for RcrdKeeper. \
+                Follow the below link to reset 10.0.0.8:4000/reset/' + key
 
-            emails.send_email('RcrdKeeper Account Recovery',app.config['MAIL_USERNAME'],
-                                email_exist['email'], email_message)
+            emails.send_email('RcrdKeeper Account Recovery',
+                                app.config['MAIL_USERNAME'],
+                                email_exist['email'],
+                                email_message)
 
     return ''
 
@@ -340,8 +351,10 @@ def contact():
         email_message = 'New request'
 
         if response['inserted'] == 1:
-            emails.send_email('RcrdKeeper Registration Confirmation','flasktesting33@gmail.com',
-                                'flasktesting33@gmail.com', email_message)
+            emails.send_email('RcrdKeeper Registration Confirmation',
+                                app.config['MAIL_USERNAME'],
+                                request.form['email'],
+                                email_message)
 
     return render_template('contact.html')
 
@@ -410,7 +423,8 @@ def query(form, query_type):
             file = request.files['artwork']
             if file and allowed_file(file.filename):
                 filename = secure_filename=(file.filename)
-                file_location = os.path.join(app.config['UPLOAD_FOLDER'], filename).split('/',1 )[1]
+                file_location = os.path.join(
+                    app.config['UPLOAD_FOLDER'], filename).split('/',1 )[1]
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         elif record['user_artwork']:
             file_location = record['user_artwork']
@@ -418,19 +432,19 @@ def query(form, query_type):
             file_location = ''
 
         records.get(form['id']).update({
-                                'user': g.user,
-                                'artist': form['artist'],
-                                'album': form['album'],
-                                'album art': album_art,
-                                'release_date': release_date,
-                                'duration': duration,
-                                'tracks': tracks,
-                                'record_condition': form['record_condition'],
-                                'sleeve_condition': form['sleeve_condition'],
-                                'color': form['color'],
-                                'notes': form['notes'],
-                                'size' : form['size'],
-                                'user_artwork': file_location}).run(g.rdb_conn)
+                            'user': g.user,
+                            'artist': form['artist'],
+                            'album': form['album'],
+                            'album art': album_art,
+                            'release_date': release_date,
+                            'duration': duration,
+                            'tracks': tracks,
+                            'record_condition': form['record_condition'],
+                            'sleeve_condition': form['sleeve_condition'],
+                            'color': form['color'],
+                            'notes': form['notes'],
+                            'size' : form['size'],
+                            'user_artwork': file_location}).run(g.rdb_conn)
 
         return {'artist': form['artist'],
                         'album': form['album'],
