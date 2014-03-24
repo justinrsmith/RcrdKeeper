@@ -350,7 +350,7 @@ def contact():
         if response['inserted'] == 1:
             emails.send_email('RcrdKeeper Registration Confirmation',
                                 app.config['MAIL_USERNAME'],
-                                request.form['email'],
+                                app.config['MAIL_USERNAME'],
                                 email_message)
 
     return render_template('contact.html')
