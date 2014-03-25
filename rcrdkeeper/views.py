@@ -137,17 +137,17 @@ def home(page=1):
     if not session.get('logged_in'):
         return render_template('login.html')
     artist = list(records.filter({
-                        'user':g.user}).order_by(
+                        'user':session['user']}).order_by(
                         'artist').pluck('artist').run(g.rdb_conn))
 
     artist = [dict(tupleized) for tupleized in set(
                         tuple(item.items()) for item in artist)]
 
     selection = list(records.filter(
-        {'user':g.user}).order_by(
+        {'user':session['user']}).order_by(
             'artist', 'album').skip((page-1)*16).limit(16).run(g.rdb_conn))
 
-    rec_count = records.filter({'user': g.user}).count().run(g.rdb_conn)
+    rec_count = records.filter({'user': session['user']}).count().run(g.rdb_conn)
 
     status_next = None
     if rec_count <= 16:
@@ -183,13 +183,13 @@ def get_records(page, artist=None):
 
     if not artist:
 
-        selection = list(records.filter({'user': g.user}).order_by(
+        selection = list(records.filter({'user': session['user']}).order_by(
                         'artist', 'album').skip((page-1)*16).limit(
                             16).run(g.rdb_conn))
 
     else:
         selection = list(records.filter({
-                        'user': g.user, 'artist': artist}).order_by(
+                        'user': session['user'], 'artist': artist}).order_by(
                         'artist', 'album').limit(16).run(g.rdb_conn))
 
     condition = list(r.table('record_condition').order_by(
@@ -219,11 +219,11 @@ def list_records(artist=None):
 
     if not artist:
         selection = list(records.filter(
-            {'user':g.user}).order_by(
+            {'user':session['user']}).order_by(
                         'artist', 'album').run(g.rdb_conn))
     else:
         selection = list(records.filter(
-            {'user':g.user, 'artist': artist}).order_by(
+            {'user':session['user'], 'artist': artist}).order_by(
                         'artist', 'album').run(g.rdb_conn))
 
     return render_template('list_records.html',
@@ -433,7 +433,7 @@ def query(form, query_type):
             file_location = ''
 
         records.get(form['id']).update({
-                            'user': g.user,
+                            'user': session['user'],
                             'artist': form['artist'],
                             'album': form['album'],
                             'album art': album_art,
@@ -458,7 +458,7 @@ def get_page(page):
     if page < 0:
         page = 0
 
-    selection = list(records.filter({'user': g.user}).order_by(
+    selection = list(records.filter({'user': session['user']}).order_by(
                     'artist', 'album').skip((page-1)*16).limit(
                         16).run(g.rdb_conn))
     rec_count =  len(selection)
