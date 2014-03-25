@@ -125,8 +125,8 @@ def login():
 @app.route('/logout')
 def logout():
 
-    session.pop('logged_in', None)
-    session.pop('user', None)
+    #session.pop('logged_in', None)
+    #session.pop('user', None)
     session.clear()
     return redirect('/')
 
@@ -421,7 +421,7 @@ def query(form, query_type):
             file_location = ''
 
         records.get(form['id']).update({
-                            'user': session['user'],
+                            #'user': session['user'],
                             'artist': form['artist'],
                             'album': form['album'],
                             'album art': album_art,

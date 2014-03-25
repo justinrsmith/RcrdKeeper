@@ -70,6 +70,9 @@ $(document).on('click', '.save_edit', function(e){
                         </button>')
                 })
             }
+            $('.data').empty()
+            //$('.data').append(data)
+            $('.record_edited').fadeIn('slow').delay(3000).fadeOut('slow')
         }
     })
     $('.modal').modal('hide')
