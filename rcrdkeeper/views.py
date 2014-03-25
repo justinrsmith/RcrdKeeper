@@ -131,7 +131,6 @@ def logout():
     return redirect('/')
 
 @app.route('/home', methods=['GET'])
-#@app.route('/home/<int:page>', methods=['GET'])
 def home():
 
     if not session.get('logged_in'):
@@ -149,14 +148,6 @@ def home():
 
     rec_count = records.filter({'user': session['user']}).count().run(g.rdb_conn)
 
-    #status_next = None
-    #if rec_count <= 16:
-    #    status_next = 'disabled'
-
-    #status_prev = None
-    #if page == 1:
-    #    status_prev = 'disabled'
-
     condition = list(r.table('record_condition').order_by(
                                     'order').run(g.rdb_conn))
 
@@ -168,9 +159,6 @@ def home():
                             selection=selection,
                             condition=condition,
                             size=size,
-                            #page=page,
-                            #status_next=status_next,
-                            #status_prev=status_prev,
                             user_name = session['user_full_name'])
 
 
