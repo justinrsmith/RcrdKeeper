@@ -29,11 +29,11 @@ def before_request():
     except RqlDriverError:
         abort(503, "No database connection could be established.")
 
-    if 'user' in session:
-        g.user = session['user']
+    #if 'user' in session:
+    #    g.user = session['user']
 
-        if request.endpoint == 'login':
-            return redirect('/home')
+    #    if request.endpoint == 'login':
+    #        return redirect('/home')
 
 
 @app.teardown_request
@@ -131,8 +131,8 @@ def logout():
     return redirect('/')
 
 @app.route('/home', methods=['GET'])
-@app.route('/home/<int:page>', methods=['GET'])
-def home(page=1):
+#@app.route('/home/<int:page>', methods=['GET'])
+def home():
 
     if not session.get('logged_in'):
         return render_template('login.html')
@@ -145,17 +145,17 @@ def home(page=1):
 
     selection = list(records.filter(
         {'user':session['user']}).order_by(
-            'artist', 'album').skip((page-1)*16).limit(16).run(g.rdb_conn))
+            'artist', 'album').limit(16).run(g.rdb_conn))
 
     rec_count = records.filter({'user': session['user']}).count().run(g.rdb_conn)
 
-    status_next = None
-    if rec_count <= 16:
-        status_next = 'disabled'
+    #status_next = None
+    #if rec_count <= 16:
+    #    status_next = 'disabled'
 
-    status_prev = None
-    if page == 1:
-        status_prev = 'disabled'
+    #status_prev = None
+    #if page == 1:
+    #    status_prev = 'disabled'
 
     condition = list(r.table('record_condition').order_by(
                                     'order').run(g.rdb_conn))
@@ -168,9 +168,9 @@ def home(page=1):
                             selection=selection,
                             condition=condition,
                             size=size,
-                            page=page,
-                            status_next=status_next,
-                            status_prev=status_prev,
+                            #page=page,
+                            #status_next=status_next,
+                            #status_prev=status_prev,
                             user_name = session['user_full_name'])
 
 
