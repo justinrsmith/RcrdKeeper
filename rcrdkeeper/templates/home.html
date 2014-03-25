@@ -32,11 +32,11 @@
 	            <div class="col-md-2 col-md-offset-10 col-xs-4 col-xs-offset-7">
 	                <div class="paginate_holder">
 	                    <ul class="pagination">
-	                    <li class="previous {{ status_prev }}"><a class="link_previous" href="/home/{{ page }}">&laquo;</a></li>
+	                    <li class="previous"><a class="link_previous" href="/home/{{ page }}">&laquo;</a></li>
 	                        {% for p in pages %}
 	                            <li {% if page == p %} class="active" {% endif %}><a href="/{{ p }}">{{ p }}</a></li>
 	                        {% endfor %}
-	                    <li class="next {{ status_next }}"><a class="link_next" href="/home/{{ page }}">&raquo;</a></li>
+	                    <li class="next"><a class="link_next" href="/home/{{ page }}">&raquo;</a></li>
 	                    </ul>
 	                </div>
 	            </div>

@@ -242,38 +242,35 @@ $('.next').click(function(e){
     e.preventDefault()
     page++
     if($(this).hasClass('disabled')){
-        return false
+        return 'hi'
     }
     else{
         $.get('/get_records/' + page, function(data){
             $('.albums').empty()
             $('.albums').append(data)
         })
-        get_page()
+        get_page_next()
     }
 })
 
 $('.previous').click(function(){
     page--
     if($(this).hasClass('disabled')){
-        return false
+        return 'hi'
     }
     else{
         $.get('/get_records/' + page, function(data){
             $('.albums').empty()
             $('.albums').append(data)
         })
-        get_page()    
+        //get_page_prev()    
     }
 })
 
-var get_page = function(){
+var get_page_next = function(){
     $.get('/get_page/' + page, function(data){
         if(data['status_next'] == 'disabled'){
             $('.next').addClass('disabled')
-        }
-        if(data['status_prev'] === null){
-            $('.previous').removeClass('disabled')
         }
     })
 }

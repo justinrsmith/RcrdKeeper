@@ -182,12 +182,10 @@ def get_records(page, artist=None):
         artist = None
 
     if not artist:
+
         selection = list(records.filter({'user': g.user}).order_by(
                         'artist', 'album').skip((page-1)*16).limit(
                             16).run(g.rdb_conn))
-        rec_count = records.filter(
-            {'user': g.user}).skip(
-             (page-1)*16).count().run(g.rdb_conn)
 
     else:
         selection = list(records.filter({
@@ -457,18 +455,19 @@ def query(form, query_type):
 @app.route('/get_page/<int:page>')
 def get_page(page):
 
+    if page < 0:
+        page = 0
+
     selection = list(records.filter({'user': g.user}).order_by(
                     'artist', 'album').skip((page-1)*16).limit(
                         16).run(g.rdb_conn))
-    rec_count = records.filter(
-        {'user': g.user}).skip(
-         (page-1)*16).count().run(g.rdb_conn)
+    rec_count =  len(selection)
 
     status_next = None
     if rec_count <= 16:
         status_next = 'disabled'
 
-    status_prev = None
+    status_prev = 'blank'
     if page == 1:
         status_prev = 'disabled'
 
