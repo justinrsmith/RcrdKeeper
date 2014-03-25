@@ -249,7 +249,7 @@ $('.next').click(function(e){
             $('.albums').empty()
             $('.albums').append(data)
         })
-        get_page_next()
+        //get_page_next()
     }
 })
 
@@ -266,14 +266,14 @@ $('.previous').click(function(){
         //get_page_prev()    
     }
 })
-
+/*
 var get_page_next = function(){
     $.get('/get_page/' + page, function(data){
         if(data['status_next'] == 'disabled'){
             $('.next').addClass('disabled')
         }
     })
-}
+}*/
 
 $(document).on('click', '.list_view', function(e){
     e.preventDefault()

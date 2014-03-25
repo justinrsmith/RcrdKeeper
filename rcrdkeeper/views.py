@@ -452,27 +452,6 @@ def query(form, query_type):
                             'album art': album_art}
 
 
-@app.route('/get_page/<int:page>')
-def get_page(page):
-
-    if page < 0:
-        page = 0
-
-    selection = list(records.filter({'user': session['user']}).order_by(
-                    'artist', 'album').skip((page-1)*16).limit(
-                        16).run(g.rdb_conn))
-    rec_count =  len(selection)
-
-    status_next = None
-    if rec_count <= 16:
-        status_next = 'disabled'
-
-    status_prev = 'blank'
-    if page == 1:
-        status_prev = 'disabled'
-
-    return jsonify(status_prev=status_prev,
-                   status_next=status_next)
 
 
      
