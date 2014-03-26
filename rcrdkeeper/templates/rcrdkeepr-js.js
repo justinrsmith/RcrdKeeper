@@ -33,7 +33,7 @@ $('.sub').click(function(e){
     }
 })
 
-$(document).on('dblclick', '.get_details', function(){
+$(document).on('click', '.get_details', function(){
     var id = $(this).attr('id')
     $('#infoModal' + id).modal('show')
 })
