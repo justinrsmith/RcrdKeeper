@@ -8,7 +8,7 @@ UPLOAD_FOLDER = 'rcrdkeeper/static/user_albums/'
 
 app = Flask(__name__)
 app.secret_key = 'fsadfsdafsafsdgrberbebebe'
-app.config['SERVER_NAME'] = 'localhost:4000'
+app.config['SERVER_NAME'] = 'rcrdkeeper.com'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config.from_object(__name__)
 
