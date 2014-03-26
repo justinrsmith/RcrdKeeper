@@ -21,7 +21,6 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 users = r.db('rcrdkeeper').table('users')
 records = r.db('rcrdkeeper').table('records')
 
-current_user = {'user': ''}
 
 @app.before_request
 def before_request():
@@ -74,7 +73,6 @@ def register():
             email_message = 'Thank you for registering with RcrdKeeper. No further action is required to use your account.'
 
             session['user'] = response['generated_keys'][0]
-            current_user['user'] = session['user']
 
             succ = 'Account successfully created. You are now logged in. \
                 You will recieve a confirmation email shortly.'
@@ -101,8 +99,6 @@ def login():
             email = c['email']
             password = c['password']
             session['user'] = c['id']
-            current_user['user'] = c['id']
-
             session['user_full_name'] = c['name']
 
         if not 'email' in locals():
@@ -140,17 +136,17 @@ def home():
     if not session.get('logged_in'):
         return render_template('login.html')
     artist = list(records.filter({
-                        'user':current_user['user']}).order_by(
+                        'user':session['user']}).order_by(
                         'artist').pluck('artist').run(g.rdb_conn))
 
     artist = [dict(tupleized) for tupleized in set(
                         tuple(item.items()) for item in artist)]
 
     selection = list(records.filter(
-        {'user':current_user['user']}).order_by(
+        {'user':session['user']}).order_by(
             'artist', 'album').limit(16).run(g.rdb_conn))
 
-    rec_count = records.filter({'user': current_user['user']}).count().run(g.rdb_conn)
+    rec_count = records.filter({'user': session['user']}).count().run(g.rdb_conn)
 
     condition = list(r.table('record_condition').order_by(
                                     'order').run(g.rdb_conn))
@@ -175,13 +171,13 @@ def get_records(page, artist=None):
 
     if not artist:
 
-        selection = list(records.filter({'user': current_user['user']}).order_by(
+        selection = list(records.filter({'user': session['user']}).order_by(
                         'artist', 'album').skip((page-1)*16).limit(
                             16).run(g.rdb_conn))
 
     else:
         selection = list(records.filter({
-                        'user': current_user['user'], 'artist': artist}).order_by(
+                        'user': session['user'], 'artist': artist}).order_by(
                         'artist', 'album').limit(16).run(g.rdb_conn))
 
     condition = list(r.table('record_condition').order_by(
@@ -211,11 +207,11 @@ def list_records(artist=None):
 
     if not artist:
         selection = list(records.filter(
-            {'user':current_user['user']}).order_by(
+            {'user':session['user']}).order_by(
                         'artist', 'album').run(g.rdb_conn))
     else:
         selection = list(records.filter(
-            {'user':current_user['user'], 'artist': artist}).order_by(
+            {'user':session['user'], 'artist': artist}).order_by(
                         'artist', 'album').run(g.rdb_conn))
 
     return render_template('list_records.html',
@@ -392,7 +388,7 @@ def query(form, query_type):
 
     if query_type == 'insert':
 
-        succ = records.insert([{'user': current_user['user'],
+        succ = records.insert([{'user': session['user'],
                                 'artist': form['artist'],
                                 'album': form['album'],
                                 'album art': album_art,
@@ -425,7 +421,7 @@ def query(form, query_type):
             file_location = ''
 
         records.get(form['id']).update({
-                            #'user': current_user['user'],
+                            #'user': session['user'],
                             'artist': form['artist'],
                             'album': form['album'],
                             'album art': album_art,
