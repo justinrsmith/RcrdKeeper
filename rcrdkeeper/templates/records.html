@@ -1,6 +1,6 @@
 {% for s in selection %}
-	<div class="col-md-3 col-xs-12 record_hold">
-	    <div class="col-md-offset-8 col-md-1 col-xs-1 col-xs-offset-8">
+	<div class="col-md-3 col-xs-6 record_hold">
+	    <div class="col-md-offset-8 col-md-1 col-xs-1 col-xs-offset-5">
 	        <a data-toggle="modal" href="#editModal{{ s['id'] }}">
 	        	<span class="glyphicon record glyphicon-pencil"></span>
 	        </a>
@@ -26,11 +26,11 @@
 		{% else %}
 			{{ s['user_artwork'] }}
 		{% endif %} " 
-		width="200" height="200"></img>
-		<div class="text-center visible-xs">
-			<strong>Artist: </strong>{{ s.artist }}<br>
-			<strong>Album: </strong>{{ s.album }}
-		</div>  
+		width="100" height="100"></img>
+		<!--<div class="text-center visible-xs">
+			<small><strong>Artist: </strong>{{ s.artist }}<br>
+			<strong>Album: </strong>{{ s.album }}</small>
+		</div>  -->
 	</div>
 	
 	{% include 'modals.html' %}

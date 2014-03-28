@@ -1,22 +1,35 @@
-<div class="album record_hold col-md-3">
-    <div class="col-md-offset-8 col-md-1 col-xs-1 col-xs-offset-8">
-        <a data-toggle="modal" href="#editModal{{ s['id'] }}">
-            <span class="glyphicon record glyphicon-pencil"></span>
-        </a>
+<div class="col-md-3 col-xs-6 record_hold">
+        <div class="col-md-offset-8 col-md-1 col-xs-1 col-xs-offset-5">
+            <a data-toggle="modal" href="#editModal{{ s['id'] }}">
+                <span class="glyphicon record glyphicon-pencil"></span>
+            </a>
+        </div>
+        <div class="col-md-1 col-xs-1 album_options" id="{{ s['id'] }}">
+            <a href="#" class="delete">
+                <span id="delete_logo" class="glyphicon glyphicon-remove"></span>
+            </a>
+        </div>
+
+        <img class="hidden-xs get_details {{ s['id'] }}" id="{{ s['id'] }}"
+        src="
+        {% if s['user_artwork'] == '' %}
+            {{ s['album art'] }}
+        {% else %}
+            {{ s['user_artwork'] }}
+        {% endif %} " 
+        width="200" height="200" data-toggle="tooltip" data-placement="top" title='{{ s.artist }} - {{ s.album }}'></img>  
+        <img class="visible-xs get_details {{ s['id'] }}" id="{{ s['id'] }}"
+        src="
+        {% if s['user_artwork'] == '' %}
+            {{ s['album art'] }}
+        {% else %}
+            {{ s['user_artwork'] }}
+        {% endif %} " 
+        width="100" height="100"></img>
+        <!--<div class="text-center visible-xs">
+            <small><strong>Artist: </strong>{{ s.artist }}<br>
+            <strong>Album: </strong>{{ s.album }}</small>
+        </div>  -->
     </div>
-    <div class="col-md-1 col-xs-1 album_options" id="{{ s['id'] }}">
-        <a href="#" class="delete">
-            <span id="delete_logo" class="glyphicon glyphicon-remove"></span>
-        </a>
-    </div>
-    <img class="get_details {{ s['id'] }}" id="{{ s['id'] }}"
-    src="
-    {% if s['user_artwork'] == '' %}
-        {{ s['album art'] }}
-    {% else %}
-        {{ s['user_artwork'] }}
-    {% endif %} " 
-    width="200" height="200" data-toggle="tooltip" data-placement="top" title='{{ s.artist }} - {{ s.album }}'></img>  
-</div>
 
 {% include 'modals.html' %}
