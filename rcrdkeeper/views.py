@@ -413,11 +413,11 @@ def query(form, query_type):
             file = request.files['artwork']
             if file and allowed_file(file.filename):
                 filename = secure_filename=(file.filename)
-                file_location = os.path.join(
-                    app.config['UPLOAD_FOLDER'], filename).split('/',1 )[1]
+                file_location = 'http://rcrdkeeper.com/static/user_albums/' + filename
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         elif record['user_artwork']:
             file_location = record['user_artwork']
+            print file_location
         else:
             file_location = ''
 

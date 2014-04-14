@@ -3,7 +3,7 @@ import os
 from flask.ext.mail import Mail
 from time import gmtime, strftime
 
-UPLOAD_FOLDER = 'rcrdkeeper/static/user_albums/'
+UPLOAD_FOLDER = '/var/www/RcrdKeeper/rcrdkeeper/static/user_albums/'
 
 
 app = Flask(__name__)
