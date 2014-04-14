@@ -16,7 +16,7 @@ from rdio import Rdio
 rdio = Rdio(('zq33ap8e526smhskzx7xkghf', 'rudg3ASW2T'))
 RCRDKEEPER_DB = 'rcrdkeeper'
 
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'JPG', 'PNG', 'JPEG'])
 
 users = r.db('rcrdkeeper').table('users')
 records = r.db('rcrdkeeper').table('records')
@@ -417,10 +417,8 @@ def query(form, query_type):
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         elif record['user_artwork']:
             file_location = record['user_artwork']
-            print file_location
         else:
             file_location = ''
-
         records.get(form['id']).update({
                             #'user': session['user'],
                             'artist': form['artist'],

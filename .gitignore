@@ -1,3 +1,5 @@
 *.pyc
 venv/
 rcrdkeepr/static/user_albums/
+.DS_Store
+rcrdkeeper/static/user_albums/Aja_album_cover.jpg
