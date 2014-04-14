@@ -24,6 +24,7 @@ records = r.db('rcrdkeeper').table('records')
 
 @app.before_request
 def before_request():
+    
     try:
         g.rdb_conn = r.connect(host='localhost', port=28015, db=RCRDKEEPER_DB)
     except RqlDriverError:
@@ -139,8 +140,8 @@ def home():
                         'user':session['user']}).order_by(
                         'artist').pluck('artist').run(g.rdb_conn))
 
-    artist = [dict(tupleized) for tupleized in set(
-                        tuple(item.items()) for item in artist)]
+    #artist = [dict(tupleized) for tupleized in set(
+    #                    tuple(item.items()) for item in artist)]
 
     selection = list(records.filter(
         {'user':session['user']}).order_by(
