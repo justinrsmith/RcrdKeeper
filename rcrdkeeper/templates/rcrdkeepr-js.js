@@ -244,39 +244,32 @@ var page = 1
 $('.next').click(function(e){
     e.preventDefault()
     page++
-    if($(this).hasClass('disabled')){
-        return 'hi'
+    if($('.previous').hasClass('disabled')){
+        $('.previous').removeClass('disabled')
     }
-    else{
+    if(!$(this).hasClass('disabled')){
         $.get('/get_records/' + page, function(data){
             $('.albums').empty()
             $('.albums').append(data)
+            that = data
+            $(that).find('div')
         })
-        //get_page_next()
     }
 })
 
 $('.previous').click(function(){
-    page--
-    if($(this).hasClass('disabled')){
-        return 'hi'
-    }
-    else{
+    if(!$(this).hasClass('disabled')){
+        page--
         $.get('/get_records/' + page, function(data){
             $('.albums').empty()
             $('.albums').append(data)
         })
-        //get_page_prev()    
+        if(page==1){
+            $('.previous').addClass('disabled')
+            $('.next').removeClass('disabled')
+        }
     }
 })
-/*
-var get_page_next = function(){
-    $.get('/get_page/' + page, function(data){
-        if(data['status_next'] == 'disabled'){
-            $('.next').addClass('disabled')
-        }
-    })
-}*/
 
 $(document).on('click', '.list_view', function(e){
     e.preventDefault()

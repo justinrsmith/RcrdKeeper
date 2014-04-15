@@ -36,7 +36,7 @@
 	            <div class="col-md-2 col-md-offset-10 col-xs-4 col-xs-offset-7">
 	                <div class="paginate_holder">
 	                    <ul class="pagination">
-	                    <li class="previous"><a class="link_previous" >&laquo;</a></li>
+	                    <li class="previous disabled"><a class="link_previous" >&laquo;</a></li>
 	                        {% for p in pages %}
 	                            <li {% if page == p %} class="active" {% endif %}><a href="/{{ p }}">{{ p }}</a></li>
 	                        {% endfor %}

@@ -134,6 +134,8 @@ def logout():
 @app.route('/home', methods=['GET'])
 def home():
 
+    print session['user']
+
     if not session.get('logged_in'):
         return render_template('login.html')
     artist = list(records.filter({
@@ -187,10 +189,17 @@ def get_records(page, artist=None):
     size = list(r.table('record_size').order_by(
                                     'order').run(g.rdb_conn))
 
+    record_count = len(selection)
+    record_count_total = len(list(records.filter({
+                        'user': session['user']}).run(g.rdb_conn)))
+    last_page = record_count_total-(16*page)
+
     return render_template('records.html',
                             selection=selection,
                             condition=condition,
-                            size=size)
+                            size=size,
+                            record_count=record_count,
+                            last_page=last_page)
 
 
 @app.route('/list_records', methods=['GET'])

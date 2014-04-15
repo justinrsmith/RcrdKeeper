@@ -36,3 +36,13 @@
 	{% include 'modals.html' %}
 {% endfor %}
 
+
+<script type="text/javascript">
+	if(("{{ record_count }}" < 16) || ("{{ last_page }}")<=0){
+		$('.next').addClass('disabled')
+	}
+	else{
+		$('.next').removeClass('disabled')
+	}
+</script>
+
