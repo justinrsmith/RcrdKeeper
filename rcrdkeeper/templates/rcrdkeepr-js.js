@@ -243,11 +243,12 @@ var page = 1
 //pagination
 $('.next').click(function(e){
     e.preventDefault()
-    page++
+    
     if($('.previous').hasClass('disabled')){
         $('.previous').removeClass('disabled')
     }
     if(!$(this).hasClass('disabled')){
+        page++
         $.get('/get_records/' + page, function(data){
             $('.albums').empty()
             $('.albums').append(data)

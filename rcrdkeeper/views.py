@@ -10,9 +10,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import hashlib
 from werkzeug import secure_filename
 import os
-
-
 from rdio import Rdio
+import datetime
+
 rdio = Rdio(('zq33ap8e526smhskzx7xkghf', 'rudg3ASW2T'))
 RCRDKEEPER_DB = 'rcrdkeeper'
 
@@ -29,13 +29,6 @@ def before_request():
         g.rdb_conn = r.connect(host='localhost', port=28015, db=RCRDKEEPER_DB)
     except RqlDriverError:
         abort(503, "No database connection could be established.")
-
-    #if 'user' in session:
-    #    g.user = session['user']
-
-    #    if request.endpoint == 'login':
-    #        return redirect('/home')
-
 
 @app.teardown_request
 def teardown_request(exception):
@@ -126,8 +119,6 @@ def login():
 @app.route('/logout')
 def logout():
 
-    #session.pop('logged_in', None)
-    #session.pop('user', None)
     session.clear()
     return redirect('/')
 
@@ -142,8 +133,12 @@ def home():
                         'user':session['user']}).order_by(
                         'artist').pluck('artist').run(g.rdb_conn))
 
-    #artist = [dict(tupleized) for tupleized in set(
-    #                    tuple(item.items()) for item in artist)]
+    artist_list = []
+    for a in artist:
+        artist_list.append(a['artist'])
+
+    artist_list = list(set(artist_list))
+    artist_list.sort()
 
     selection = list(records.filter(
         {'user':session['user']}).order_by(
@@ -158,7 +153,7 @@ def home():
                                     'order').run(g.rdb_conn))
 
     return render_template('home.html',
-                            artist=artist,
+                            artist_list=artist_list,
                             selection=selection,
                             condition=condition,
                             size=size,
@@ -410,6 +405,7 @@ def query(form, query_type):
                                 'color': '',
                                 'size': '',
                                 'notes': '',
+                                'date_added': r.now().in_timezone('-05:00'),
                                 'user_artwork': ''}]).run(g.rdb_conn)
 
         selection = records.get(succ['generated_keys'][0]).run(g.rdb_conn)

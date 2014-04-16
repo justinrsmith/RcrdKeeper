@@ -69,8 +69,8 @@
                 <div class="col-md-3 hidden-xs text-center">
                     <select class="" id="record_search" multiple="true" placeholder="Artist Search">
                         <option></option>
-                        {% for a in artist %}
-                            <option>{{ a.artist }}</option>
+                        {% for a in artist_list %}
+                            <option>{{ a }}</option>
                         {% endfor %}
                     </select>
                 </div>
