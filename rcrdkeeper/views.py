@@ -271,14 +271,17 @@ def delete_record(record_id=None):
 def get_albums(artist):
 
     artist_info = rdio.call('search', {'query': artist, 'types': 'artist'})
+    
+    if not artist_info['result']['number_results'] == 0:
+        artist_key = artist_info['result']['results'][0]['key']
 
-    artist_key = artist_info['result']['results'][0]['key']
+        get_albums = rdio.call('getAlbumsForArtist', {'artist': artist_key})
 
-    get_albums = rdio.call('getAlbumsForArtist', {'artist': artist_key})
-
-    albums = []
-    for i,x in enumerate(get_albums['result']):
-        albums.append({'id':x['name'], 'text': x['name']})
+        albums = []
+        for i,x in enumerate(get_albums['result']):
+            albums.append({'id':x['name'], 'text': x['name']})
+    else:
+        albums = ''
 
     return jsonify(albums=albums)
 
