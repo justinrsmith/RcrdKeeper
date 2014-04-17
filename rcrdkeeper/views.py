@@ -12,6 +12,7 @@ from werkzeug import secure_filename
 import os
 from rdio import Rdio
 import datetime
+from pytz import timezone
 
 rdio = Rdio(('zq33ap8e526smhskzx7xkghf', 'rudg3ASW2T'))
 RCRDKEEPER_DB = 'rcrdkeeper'
@@ -124,8 +125,6 @@ def logout():
 
 @app.route('/home', methods=['GET'])
 def home():
-
-    print session['user']
 
     if not session.get('logged_in'):
         return render_template('login.html')
@@ -408,7 +407,7 @@ def query(form, query_type):
                                 'color': '',
                                 'size': '',
                                 'notes': '',
-                                'date_added': r.now().in_timezone('-05:00'),
+                                'date_added': r.expr(datetime.datetime.now(timezone('US/Central'))),
                                 'user_artwork': ''}]).run(g.rdb_conn)
 
         selection = records.get(succ['generated_keys'][0]).run(g.rdb_conn)

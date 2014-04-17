@@ -194,7 +194,7 @@ $(document).on('click', '.forgot_pw', function(e){
         success: function(){
         }
     })
-    console.log(email)
+
     $('#password_forgot').popover('hide')
     $('.data').empty()
     $('.data').append(email['email'])
@@ -349,6 +349,13 @@ $(document).on('click', '#contact_sub', function(e){
 })
 
 $(document).on('click', '.add', function(){
+    if(!$('.search_moblie').hasClass('hide_add')){
+        $('.search_moblie').addClass('hide_add')
+        $('#record_search').parent('div').addClass('hidden-xs')
+        $('#record_search').parent('div').fadeOut('slow')
+        $(this).removeClass('hide_search')
+        $('#record_search').parent('div').addClass('hidden-xs')
+    }
     $('#welcome').remove()
     $('.new_record').css('height', 'auto')
     $('#input').removeClass('hidden-xs').children('div:first').removeClass('hidden-xs')
@@ -368,6 +375,12 @@ $(document).on('click', '.hide_add', function(){
 })
 
 $(document).on('click', '.search_mobile', function(){
+    $('.new_record').hide()
+    $('.hide_add').addClass('add')
+    $('.hide_add').children('span').remove()
+    $('.hide_add').append('<span class="glyphicon glyphicon-plus"></span>')
+    $('.hide_add').removeClass('hide_add')
+    
     if($(this).hasClass('hide_search')){
         $('#record_search').parent('div').addClass('hidden-xs')
         $('#record_search').parent('div').fadeOut('slow')

@@ -11,5 +11,6 @@ bpython==0.12
 itsdangerous==0.23
 protobuf==2.5.0
 python-openid==2.2.5
+pytz==2014.2
 rethinkdb==1.11.0-0
 wsgiref==0.1.2
