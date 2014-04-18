@@ -49,7 +49,7 @@ $(document).on('click', '.save_edit', function(e){
             id = $(this).attr('id')
             $('.'+id).attr('src', data)
             if($(that).parents('div.modal').hasClass('list')){
-                $.get('/list_records', function(data){
+                $.get('/list_records/1/', function(data){
                     $('.albums').empty()
                     $('.albums').append(data)
                     $(document).ready(function(){
@@ -129,7 +129,7 @@ $('#record_search').change(function(){
     var artist = $('#record_search option:selected').val()
 
     if($(this).hasClass('list')){
-        $.get('/list_records/' + artist, function(data){
+        $.get('/list_records/1/' + artist, function(data){
             $('.albums').empty()
             $('.albums').append(data)
             $(document).ready(function(){
@@ -243,18 +243,29 @@ var page = 1
 //pagination
 $('.next').click(function(e){
     e.preventDefault()
-    
+
     if($('.previous').hasClass('disabled')){
         $('.previous').removeClass('disabled')
     }
     if(!$(this).hasClass('disabled')){
         page++
-        $.get('/get_records/' + page, function(data){
-            $('.albums').empty()
-            $('.albums').append(data)
-            that = data
-            $(that).find('div')
-        })
+
+        if(!$('.next').hasClass('list')){
+            $.get('/get_records/' + page, function(data){
+                $('.albums').empty()
+                $('.albums').append(data)
+                that = data
+                $(that).find('div')
+            })
+        }
+        else{
+            $.get('/list_records/' + page, function(data){
+                $('.albums').empty()
+                $('.albums').append(data)
+                that = data
+                $(that).find('div')
+            })
+        }
     }
 })
 
@@ -281,7 +292,7 @@ $(document).on('click', '.list_view', function(e){
 
     $('.paginate_holder').hide()
 
-    $.get('/list_records', function(data){
+    $.get('/list_records/1/', function(data){
         $('.albums').empty()
         $('.albums').append(data)
         $(document).ready(function(){
@@ -314,7 +325,7 @@ $(document).on('click', '.refresh', function(e){
     e.preventDefault()
 
     if(($(this).hasClass('list'))){
-        $.get('/list_records', function(data){
+        $.get('/list_records/1/', function(data){
             $('.albums').empty()
             $('.albums').append(data)
             $(document).ready(function(){

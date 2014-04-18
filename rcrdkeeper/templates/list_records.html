@@ -32,8 +32,82 @@
 	{% endfor %}
 </div>
 
+<div class="row">
+    <div class="col-md-2 col-md-offset-10 col-xs-4 col-xs-offset-7">
+        <div class="paginate_holder">
+            <ul class="pagination">
+            <li class="previous {{ disabled }} list"><a class="link_previous" >&laquo;</a></li>
+                {% for p in pages %}
+                    <li {% if page == p %} class="active" {% endif %}><a href="/{{ p }}">{{ p }}</a></li>
+                {% endfor %}
+            <li class="next list"><a class="link_next">&raquo;</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
+
+	var page = {{page}}
+
+	//pagination
+	$('.next').click(function(e){
+	    e.preventDefault()
+
+	    if($('.previous').hasClass('disabled')){
+	        $('.previous').removeClass('disabled')
+	    }
+	    if(!$(this).hasClass('disabled')){
+	        page++
+	        if(!$('.next').hasClass('list')){
+	            $.get('/get_records/' + page, function(data){
+	                $('.albums').empty()
+	                $('.albums').append(data)
+	                that = data
+	                $(that).find('div')
+	            })
+	        }
+	        else{
+	            $.get('/list_records/' + page, function(data){
+	                $('.albums').empty()
+	                $('.albums').append(data)
+	                that = data
+	                $(that).find('div')
+	            })
+	        }
+	    }
+	})
+
+	$('.previous').click(function(){
+	    if(!$(this).hasClass('disabled')){
+	        page--
+	        if(!$('.previous').hasClass('list')){
+		        $.get('/get_records/' + page, function(data){
+		            $('.albums').empty()
+		            $('.albums').append(data)
+		        })
+		    }
+		    else{
+		    	$.get('/list_records/' + page, function(data){
+		    	    $('.albums').empty()
+		    	    $('.albums').append(data)
+		    	})
+		    }
+	        if(page==1){
+	            $('.previous').addClass('disabled')
+	            $('.next').removeClass('disabled')
+	        }
+	    }
+	})
+
 	if(!$('.edit').hasClass('list')){
 		$('.edit').addClass('list')
+	}
+
+	if(("{{ record_count }}" < 16) || ("{{ last_page }}")<=0){
+		$('.next').addClass('disabled')
+	}
+	else{
+		$('.next').removeClass('disabled')
 	}
 </script>

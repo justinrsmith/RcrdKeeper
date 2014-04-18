@@ -115,7 +115,10 @@ def login():
             session['logged_in'] = True
             
             return redirect('/home')
-    return render_template('login.html', error=error)
+
+    if not request.form.has_key('email'):
+        email = ''
+    return render_template('login.html', error=error, email=email)
 
 @app.route('/logout')
 def logout():
@@ -196,9 +199,9 @@ def get_records(page, artist=None):
                             last_page=last_page)
 
 
-@app.route('/list_records', methods=['GET'])
+@app.route('/list_records/<int:page>/', methods=['GET'])
 @app.route('/list_records/<string:artist>', methods=['GET'])
-def list_records(artist=None):
+def list_records(page, artist=None):
 
     if artist == 'undefined':
         artist = None
@@ -212,16 +215,34 @@ def list_records(artist=None):
     if not artist:
         selection = list(records.filter(
             {'user':session['user']}).order_by(
-                        'artist', 'album').run(g.rdb_conn))
+                        'artist', 'album').skip((page-1)*16).limit(
+                            16).run(g.rdb_conn))
     else:
         selection = list(records.filter(
             {'user':session['user'], 'artist': artist}).order_by(
-                        'artist', 'album').run(g.rdb_conn))
+                        'artist', 'album').skip((page-1)*16).limit(
+                            16).run(g.rdb_conn))
+
+    record_count = len(selection)
+    record_count_total = len(list(records.filter({
+                        'user': session['user']}).run(g.rdb_conn)))
+
+    last_page = record_count_total-(16*page)
+
+    if page > 1:
+        disabled = None
+    else:
+        disabled = 'disabled'
 
     return render_template('list_records.html',
                             selection=selection,
                             condition=condition,
-                            size=size)
+                            size=size,
+                            record_count=record_count,
+                            last_page=last_page,
+                            page=page,
+                            disabled=disabled)
+
 
 
 @app.route('/submit/<string:location>', methods=['POST', 'GET'])
