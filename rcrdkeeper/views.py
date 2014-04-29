@@ -13,6 +13,8 @@ import os
 from rdio import Rdio
 import datetime
 from pytz import timezone
+from rcrdkeeper import models as m
+from rethinkORM import RethinkCollection
 
 rdio = Rdio(('zq33ap8e526smhskzx7xkghf', 'rudg3ASW2T'))
 RCRDKEEPER_DB = 'rcrdkeeper'
@@ -87,38 +89,30 @@ def login():
 
     if request.method == 'POST':
 
-        cursor = users.filter(r.row['email'] == request.form['email']
-                                                            ).run(g.rdb_conn)
+        auth_user = m.User.auth_user(request.form['email'],
+                                request.form['password'])
 
-        for c in cursor:
-            email = c['email']
-            password = c['password']
-            session['user'] = c['id']
-            session['user_full_name'] = c['name']
+        if auth_user['status']:
+            user = m.User.get(email=request.form['email'])
 
-        if not 'email' in locals():
-            email = None
-            password = None
-        else:
-            valid_password = check_password_hash(
-                password, request.form['password'])
-
-        if request.form['email'] != email:
-            error = 'Email address does not exist.'
-            session['logged_in'] = False
-            session.clear()
-        elif not valid_password:
-            error = 'Invalid password.'
-            session['logged_in'] = False
-            session.clear()
-        else:
             session['logged_in'] = True
-            
-            return redirect('/home')
+            session['email'] = user['email']
+            session['user'] = user['id']
+            session['user_full_name'] = user['name']
 
-    if not request.form.has_key('email'):
-        email = ''
-    return render_template('login.html', error=error, email=email)
+            return redirect('/home')
+        else:
+            if auth_user['reason'] == 'not exist':
+                error = 'Email address %s does not exist.' % request.form['email']
+                session['logged_in'] = False
+                session.clear()
+            elif auth_user['reason'] == 'not password':
+                error = 'Invalid password.'
+                session['logged_in'] = False
+                session.clear()
+
+    return render_template('login.html',  error=error)
+
 
 @app.route('/logout')
 def logout():
