@@ -51,14 +51,15 @@ class User(RethinkModel, Query):
 		user = {}
 		if not get_user:
 			user['status'] = False
-			user['reason'] = 'not exist'
+			user['is_user'] = False
 			return user
 		else:
 			valid_password = check_password_hash(get_user[0]['password'],
 												 password)
 			if not valid_password:
 				user['status'] = False
-				user['reason'] = 'not password'
+				user['valid_password'] = False
+				user['is_user'] = True
 				return user
 
 		user['status'] = True

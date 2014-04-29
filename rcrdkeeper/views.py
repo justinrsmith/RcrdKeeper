@@ -27,7 +27,7 @@ records = r.db('rcrdkeeper').table('records')
 
 @app.before_request
 def before_request():
-    
+
     try:
         g.rdb_conn = r.connect(host='localhost', port=28015, db=RCRDKEEPER_DB)
     except RqlDriverError:
@@ -78,7 +78,7 @@ def register():
                 emails.send_email('RcrdKeeper Registration Confirmation',
                     app.config['MAIL_USERNAME'],
                     request.form['email'], email_message)
-         
+
         return render_template('home.html', succ=succ, first_login=True)
 
 
@@ -91,7 +91,7 @@ def login():
 
         auth_user = m.User.auth_user(request.form['email'],
                                 request.form['password'])
-
+        print auth_user
         if auth_user['status']:
             user = m.User.get(email=request.form['email'])
 
@@ -102,11 +102,13 @@ def login():
 
             return redirect('/home')
         else:
-            if auth_user['reason'] == 'not exist':
+            if not auth_user['is_user']:
+                print 'hi'
                 error = 'Email address %s does not exist.' % request.form['email']
                 session['logged_in'] = False
                 session.clear()
-            elif auth_user['reason'] == 'not password':
+            elif not auth_user['valid_password']:
+                print 'hi2'
                 error = 'Invalid password.'
                 session['logged_in'] = False
                 session.clear()
@@ -199,7 +201,7 @@ def list_records(page, artist=None):
 
     if artist == 'undefined':
         artist = None
-        
+
     condition = list(r.table('record_condition').order_by(
                                     'order').run(g.rdb_conn))
 
@@ -285,7 +287,7 @@ def delete_record(record_id=None):
 def get_albums(artist):
 
     artist_info = rdio.call('search', {'query': artist, 'types': 'artist'})
-    
+
     if not artist_info['result']['number_results'] == 0:
         artist_key = artist_info['result']['results'][0]['key']
 
@@ -310,9 +312,9 @@ def forgot():
 
         if email_exist:
             key = hashlib.md5(email_exist['id']).hexdigest()
-            
+
             users.get(email_exist['id']).update({'key': key}).run(g.rdb_conn)
-        
+
             email_message = 'This email has receieved a request to reset password for RcrdKeeper. Follow the below link to reset rcrdkeeper.com/reset/' + key
 
             emails.send_email('RcrdKeeper Account Recovery',
@@ -339,7 +341,7 @@ def reset(key=None):
                 'password': hash_pw, 'key': None}).run(g.rdb_conn)
             session['logged_in'] = True
             session['user_full_name'] = str(users['name'])
-            
+
             succ = 'Your password has been reset, you may now login.'
             return render_template('login.html',succ=succ)
     else:
@@ -459,8 +461,3 @@ def query(form, query_type):
         return {'artist': form['artist'],
                         'album': form['album'],
                             'album art': album_art}
-
-
-
-
-     
