@@ -13,10 +13,10 @@ class Query(object):
 		return collection
 
 	@classmethod
-	def order_by(self, *field):#, direct='desc'):
+	def order_by(self, *field):
 		collection = RethinkCollection(self)
-		collection.orderBy(field, direct=direct)
-		return collection
+		collection.orderBy(*field, direct='asc')
+		return collection.fetch()
 
 	@classmethod
 	def limit(self, value):
@@ -28,6 +28,11 @@ class Query(object):
 	def get(self, **kwargs):
 		collection = RethinkCollection(self, filter=kwargs)
 		return collection.fetch()[0]
+
+	@classmethod
+	def filter(self, **kwargs):
+		collection = RethinkCollection(self, filter=kwargs)
+		return collection
 
 class Condition(RethinkModel, Query):
 	table = "record_condition"

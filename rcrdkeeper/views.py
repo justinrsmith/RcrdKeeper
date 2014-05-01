@@ -103,12 +103,10 @@ def login():
             return redirect('/home')
         else:
             if not auth_user['is_user']:
-                print 'hi'
                 error = 'Email address %s does not exist.' % request.form['email']
                 session['logged_in'] = False
                 session.clear()
             elif not auth_user['valid_password']:
-                print 'hi2'
                 error = 'Invalid password.'
                 session['logged_in'] = False
                 session.clear()
@@ -127,28 +125,26 @@ def home():
 
     if not session.get('logged_in'):
         return render_template('login.html')
-    artist = list(records.filter({
-                        'user':session['user']}).order_by(
-                        'artist').pluck('artist').run(g.rdb_conn))
+
+    get_artist = m.Records.filter(
+        user=session['user']).orderBy('artist').fetch()
 
     artist_list = []
-    for a in artist:
+    for a in get_artist:
         artist_list.append(a['artist'])
 
     artist_list = list(set(artist_list))
     artist_list.sort()
 
-    selection = list(records.filter(
-        {'user':session['user']}).order_by(
-            'artist', 'album').limit(16).run(g.rdb_conn))
+    selection = m.Records.filter(
+        user=session['user']).orderBy(
+        'artist').orderBy('album', direct='asc').fetch()
 
-    rec_count = records.filter({'user': session['user']}).count().run(g.rdb_conn)
+    rec_count = len(m.Records.filter(user=session['user']).fetch())
 
-    condition = list(r.table('record_condition').order_by(
-                                    'order').run(g.rdb_conn))
+    condition = m.Condition.order_by('order')
 
-    size = list(r.table('record_size').order_by(
-                                    'order').run(g.rdb_conn))
+    size = m.Size.order_by('order')
 
     return render_template('home.html',
                             artist_list=artist_list,
@@ -176,11 +172,9 @@ def get_records(page, artist=None):
                         'user': session['user'], 'artist': artist}).order_by(
                         'artist', 'album').limit(16).run(g.rdb_conn))
 
-    condition = list(r.table('record_condition').order_by(
-                                    'order').run(g.rdb_conn))
+    condition = m.Condition.order_by('order')
 
-    size = list(r.table('record_size').order_by(
-                                    'order').run(g.rdb_conn))
+    size = m.Size.order_by('order')
 
     record_count = len(selection)
     record_count_total = len(list(records.filter({
@@ -202,11 +196,9 @@ def list_records(page, artist=None):
     if artist == 'undefined':
         artist = None
 
-    condition = list(r.table('record_condition').order_by(
-                                    'order').run(g.rdb_conn))
+    condition = m.Condition.order_by('order')
 
-    size = list(r.table('record_size').order_by(
-                                    'order').run(g.rdb_conn))
+    size = m.Size.order_by('order')
 
     if not artist:
         selection = list(records.filter(
@@ -246,11 +238,9 @@ def new_record(location):
 
     new_info = query(request.form, 'insert')
 
-    condition = list(r.table('record_condition').order_by(
-                                    'order').run(g.rdb_conn))
+    condition = m.Condition.order_by('order')
 
-    size = list(r.table('record_size').order_by(
-                                    'order').run(g.rdb_conn))
+    size = m.Size.order_by('order')
 
     record = records.get(new_info).run(g.rdb_conn)
 
