@@ -163,22 +163,21 @@ def get_records(page, artist=None):
 
     if not artist:
 
-        selection = list(records.filter({'user': session['user']}).order_by(
-                        'artist', 'album').skip((page-1)*16).limit(
-                            16).run(g.rdb_conn))
+        selection = m.Records.filter(
+            user=session['user']).orderBy(
+            'artist').orderBy('album', direct='asc').fetch()
 
     else:
-        selection = list(records.filter({
-                        'user': session['user'], 'artist': artist}).order_by(
-                        'artist', 'album').limit(16).run(g.rdb_conn))
+        selection = m.Records.filter(
+            user=session['user'], artist=artist).orderBy(
+            'artist').orderBy('album', direct='asc').fetch()
 
     condition = m.Condition.order_by('order')
 
     size = m.Size.order_by('order')
 
     record_count = len(selection)
-    record_count_total = len(list(records.filter({
-                        'user': session['user']}).run(g.rdb_conn)))
+    record_count_total = len(m.Records.filter(user=session['user']).fetch())
     last_page = record_count_total-(16*page)
 
     return render_template('records.html',
