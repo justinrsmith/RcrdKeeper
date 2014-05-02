@@ -5,3 +5,4 @@ rcrdkeepr/static/user_albums/
 rcrdkeeper/static/user_albums/Aja_album_cover.jpg
 rcrdkeeper/settings.py
 rcrdkeeper/.DS_Store
+rethinkdb_data/
