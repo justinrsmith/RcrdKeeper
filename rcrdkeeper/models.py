@@ -27,26 +27,37 @@ class Query(object):
 	@classmethod
 	def get(self, **kwargs):
 		collection = RethinkCollection(self, filter=kwargs)
-		return collection.fetch()[0]
+		results = collection.fetch()
+
+		if results:
+			return results[0]
+		else:
+			return None
 
 	@classmethod
 	def filter(self, **kwargs):
 		collection = RethinkCollection(self, filter=kwargs)
-		return collection
+		return collection 
+
 
 class Condition(RethinkModel, Query):
-	table = "record_condition"
+	table = 'record_condition'
 
 
 class Size(RethinkModel,  Query):
-	table = "record_size"
+	table = 'record_size'
 
 
 class Records(RethinkModel, Query):
-	table = "records"
+	table = 'records'
+
+
+class Contact(RethinkModel):
+	table = 'contact'
+
 
 class User(RethinkModel, Query):
-	table = "users"
+	table = 'users'
 
 	@classmethod
 	def auth_user(self, email, password):

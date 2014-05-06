@@ -13,7 +13,7 @@
         <img class="hidden-xs get_details {{ s['id'] }}" id="{{ s['id'] }}"
         src="
         {% if s['user_artwork'] == '' %}
-            {{ s['album art'] }}
+            {{ s['album_art'] }}
         {% else %}
             {{ s['user_artwork'] }}
         {% endif %} " 
@@ -21,15 +21,11 @@
         <img class="visible-xs get_details {{ s['id'] }}" id="{{ s['id'] }}"
         src="
         {% if s['user_artwork'] == '' %}
-            {{ s['album art'] }}
+            {{ s['album_art'] }}
         {% else %}
             {{ s['user_artwork'] }}
         {% endif %} " 
         width="100" height="100"></img>
-        <!--<div class="text-center visible-xs">
-            <small><strong>Artist: </strong>{{ s.artist }}<br>
-            <strong>Album: </strong>{{ s.album }}</small>
-        </div>  -->
     </div>
 
 {% include 'modals.html' %}

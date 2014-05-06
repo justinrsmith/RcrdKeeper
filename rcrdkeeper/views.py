@@ -91,7 +91,7 @@ def login():
 
         auth_user = m.User.auth_user(request.form['email'],
                                 request.form['password'])
-        print auth_user
+
         if auth_user['status']:
             user = m.User.get(email=request.form['email'])
 
@@ -138,7 +138,7 @@ def home():
 
     selection = m.Records.filter(
         user=session['user']).orderBy(
-        'artist').orderBy('album', direct='asc').fetch()
+        'artist').orderBy('album', direct='asc').limit(16).fetch()
 
     rec_count = len(m.Records.filter(user=session['user']).fetch())
 
@@ -156,21 +156,23 @@ def home():
 
 @app.route('/get_records/<int:page>', methods=['GET'])
 @app.route('/get_records/<int:page>/<string:artist>', methods=['GET'])
+@app.route('/list_records/<int:page>/', methods=['GET'])
+@app.route('/list_records/<string:artist>', methods=['GET'])
 def get_records(page, artist=None):
-
+    print request.path
     if artist == 'undefined':
         artist = None
 
     if not artist:
-
         selection = m.Records.filter(
-            user=session['user']).orderBy(
+            user=session['user']).offset((page-1)*16).limit(16).orderBy(
             'artist').orderBy('album', direct='asc').fetch()
 
     else:
         selection = m.Records.filter(
-            user=session['user'], artist=artist).orderBy(
-            'artist').orderBy('album', direct='asc').fetch()
+            user=session['user'], artist=artist).offset(
+            (page-1)*16).limit(16).orderBy('artist').orderBy(
+            'album', direct='asc').fetch()
 
     condition = m.Condition.order_by('order')
 
@@ -180,68 +182,71 @@ def get_records(page, artist=None):
     record_count_total = len(m.Records.filter(user=session['user']).fetch())
     last_page = record_count_total-(16*page)
 
-    return render_template('records.html',
-                            selection=selection,
-                            condition=condition,
-                            size=size,
-                            record_count=record_count,
-                            last_page=last_page)
-
-
-@app.route('/list_records/<int:page>/', methods=['GET'])
-@app.route('/list_records/<string:artist>', methods=['GET'])
-def list_records(page, artist=None):
-
-    if artist == 'undefined':
-        artist = None
-
-    condition = m.Condition.order_by('order')
-
-    size = m.Size.order_by('order')
-
-    if not artist:
-        selection = list(records.filter(
-            {'user':session['user']}).order_by(
-                        'artist', 'album').skip((page-1)*16).limit(
-                            16).run(g.rdb_conn))
+    if not 'list_records' in request.path:
+        return render_template('records.html',
+                                selection=selection,
+                                condition=condition,
+                                size=size,
+                                record_count=record_count,
+                                last_page=last_page)
     else:
-        selection = list(records.filter(
-            {'user':session['user'], 'artist': artist}).order_by(
-                        'artist', 'album').skip((page-1)*16).limit(
-                            16).run(g.rdb_conn))
+        return render_template('list_records.html',
+                        selection=selection,
+                        condition=condition,
+                        size=size,
+                        record_count=record_count,
+                        last_page=last_page)
 
-    record_count = len(selection)
-    record_count_total = len(list(records.filter({
-                        'user': session['user']}).run(g.rdb_conn)))
-
-    last_page = record_count_total-(16*page)
-
-    if page > 1:
-        disabled = None
-    else:
-        disabled = 'disabled'
-
-    return render_template('list_records.html',
-                            selection=selection,
-                            condition=condition,
-                            size=size,
-                            record_count=record_count,
-                            last_page=last_page,
-                            page=page,
-                            disabled=disabled)
 
 
 
 @app.route('/submit/<string:location>', methods=['POST', 'GET'])
 def new_record(location):
 
-    new_info = query(request.form, 'insert')
+    album_info = rdio.call('search', {'query': request.form['album'],
+                                         'types': 'album'})
+
+    if album_info['result']['number_results'] != 0:
+        for x in album_info['result']['results']:
+            if x['artist'].upper() == request.form['artist'].upper():
+                album_art    = x['icon']
+                release_date = x['releaseDate']
+                duration     = x['duration']
+                duration     = duration/60
+                tracks       = x['length']
+                artist_key   = x['artistKey']
+    else:
+        album_art = 'http://musicunderfire.com/wp-content/uploads/2012/06/No-album-art-itunes-300x300.jpg'
+        release_date = ''
+        duration = 0
+        tracks = 0
+        artist_key = ''
+
+    new_record = m.Records()
+
+    new_record.user     = session['user']
+    new_record.artist   = request.form['artist']
+    new_record.album    = request.form['album']
+    new_record.album_art = album_art
+    new_record.release_date = release_date
+    new_record.duration     = duration
+    new_record.tracks   = tracks
+    new_record.record_condition = ''
+    new_record.sleeve_condition = ''
+    new_record.color = ''
+    new_record.size  = ''
+    new_record.notes = ''
+    new_record.date_added = r.expr(datetime.datetime.now(
+                        timezone('US/Central')))
+    new_record.user_artwork=''
+
+    new_record.save()
 
     condition = m.Condition.order_by('order')
 
     size = m.Size.order_by('order')
 
-    record = records.get(new_info).run(g.rdb_conn)
+    record = m.Records.get(id=new_record['id'])
 
     if location == 'grid':
         return render_template('new_record.html',
@@ -258,7 +263,29 @@ def new_record(location):
 @app.route('/edit', methods=['POST'])
 def edit_record():
 
-    new_info = query(request.form, 'edit')
+    record = m.Records.get(id=request.form['id'])
+
+    if request.files.get('artwork'):
+        file = request.files['artwork']
+        if file and allowed_file(file.filename):
+            filename = secure_filename=(file.filename)
+            file_location = 'http://rcrdkeeper.com/static/user_albums/' + filename
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    elif record['user_artwork']:
+        file_location = record['user_artwork']
+    else:
+        file_location = ''
+
+    record.color = request.form['color']
+    record.notes = request.form['notes']
+    record.size  = request.form['size']
+    record.artist       = request.form['artist']
+    record.album        = request.form['album']
+    record.user_artwork     = file_location
+    record.record_condition = request.form['record_condition']
+    record.sleeve_condition = request.form['sleeve_condition']
+
+    record.save()
 
     return redirect('/')
 
@@ -266,11 +293,10 @@ def edit_record():
 @app.route('/delete/<string:record_id>', methods=['POST'])
 def delete_record(record_id=None):
 
-    a = records.get(record_id).run(g.rdb_conn)
+    record = m.Records(record_id)
+    record.delete()
 
-    records.get(record_id).delete().run(g.rdb_conn)
-
-    return a['artist'] + ' - ' + a['album']
+    return record['artist'] + ' - ' + record['album']
 
 @app.route('/get_albums/<string:artist>', methods=['GET'])
 def get_albums(artist):
@@ -296,13 +322,14 @@ def forgot():
 
     if request.method == 'POST':
 
-        email_exist = list(users.filter({
-            'email': request.form['email']}).run(g.rdb_conn)).pop()
+        email_exist = m.User.get(email=request.form['email'])
 
         if email_exist:
             key = hashlib.md5(email_exist['id']).hexdigest()
 
-            users.get(email_exist['id']).update({'key': key}).run(g.rdb_conn)
+            user = m.User.get(id=email_exist['id'])
+            user.key = key
+            user.save()
 
             email_message = 'This email has receieved a request to reset password for RcrdKeeper. Follow the below link to reset rcrdkeeper.com/reset/' + key
 
@@ -311,23 +338,24 @@ def forgot():
                                 email_exist['email'],
                                 email_message)
 
-    return ''
+    return None
 
 
 @app.route('/reset', methods=['POST'])
 @app.route('/reset/<string:key>', methods=['POST', 'GET'])
 def reset(key=None):
 
-    key_exists = users.filter({'key': key}).count().run(g.rdb_conn)
+    user_has_key = m.User.get(key=key)
 
-    if not key_exists == 0:
-        user = list(users.filter({'key': key}).run(g.rdb_conn)).pop()
-
+    if user_has_key:
         if request.method == 'POST':
 
             hash_pw = generate_password_hash(request.form['verify_password'])
-            users.get(user['id']).update({
-                'password': hash_pw, 'key': None}).run(g.rdb_conn)
+
+            user_has_key.password = hash_pw
+            user_has_key.key = None
+            user_has_key.save()
+
             session['logged_in'] = True
             session['user_full_name'] = str(users['name'])
 
@@ -344,18 +372,18 @@ def contact():
 
     if request.method == 'POST':
 
-        response = r.db('rcrdkeeper').table('contact').insert(
-            [{'issue_type': request.form['issue_type'],
-              'email': request.form['email'],
-              'comment': request.form['comment']}]).run(g.rdb_conn)
+        contact = m.Contact(
+                issue_type=request.form['issue_type'],
+                email=request.form['email'],
+                comment=request.form['comment']
+            )
 
-        email_message = 'New request'
+        email_message = contact['comment']
 
-        if response['inserted'] == 1:
-            emails.send_email('RcrdKeeper Registration Confirmation',
-                                app.config['MAIL_USERNAME'],
-                                app.config['MAIL_USERNAME'],
-                                email_message)
+        emails.send_email('RcrdKeeper Registration Confirmation',
+                            app.config['MAIL_USERNAME'],
+                            app.config['MAIL_USERNAME'],
+                            email_message)
 
     return render_template('contact.html')
 
@@ -370,83 +398,3 @@ def allowed_file(filename):
 
     return '.' in filename and \
             filename.rsplit('.',1)[1] in ALLOWED_EXTENSIONS
-
-def query(form, query_type):
-
-    album_info = rdio.call('search', {'query': form['album'],
-                                         'types': 'album'})
-
-    if album_info['result']['number_results'] != 0:
-        for x in album_info['result']['results']:
-            if x['artist'].upper() == form['artist'].upper():
-                album_art = x['icon']
-                release_date = x['releaseDate']
-                duration = x['duration']
-                duration = duration/60
-                tracks = x['length']
-                artist_key = x['artistKey']
-                break
-            else:
-                album_art = 'http://musicunderfire.com/wp-content/uploads/2012/06/No-album-art-itunes-300x300.jpg'
-                release_date = ''
-                duration = 0
-                tracks = 0
-                artist_key = ''
-    else:
-        album_art = 'http://musicunderfire.com/wp-content/uploads/2012/06/No-album-art-itunes-300x300.jpg'
-        release_date = ''
-        duration = 0
-        tracks = 0
-        artist_key = ''
-
-    if query_type == 'insert':
-
-        succ = records.insert([{'user': session['user'],
-                                'artist': form['artist'],
-                                'album': form['album'],
-                                'album art': album_art,
-                                'release_date': release_date,
-                                'duration': duration,
-                                'tracks': tracks,
-                                'record_condition': '',
-                                'sleeve_condition': '',
-                                'color': '',
-                                'size': '',
-                                'notes': '',
-                                'date_added': r.expr(datetime.datetime.now(timezone('US/Central'))),
-                                'user_artwork': ''}]).run(g.rdb_conn)
-
-        selection = records.get(succ['generated_keys'][0]).run(g.rdb_conn)
-
-        return succ['generated_keys'][0]
-    elif query_type == 'edit':
-        record = records.get(form['id']).run(g.rdb_conn)
-
-        if request.files.get('artwork'):
-            file = request.files['artwork']
-            if file and allowed_file(file.filename):
-                filename = secure_filename=(file.filename)
-                file_location = 'http://rcrdkeeper.com/static/user_albums/' + filename
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        elif record['user_artwork']:
-            file_location = record['user_artwork']
-        else:
-            file_location = ''
-        records.get(form['id']).update({
-                            #'user': session['user'],
-                            'artist': form['artist'],
-                            'album': form['album'],
-                            'album art': album_art,
-                            'release_date': release_date,
-                            'duration': duration,
-                            'tracks': tracks,
-                            'record_condition': form['record_condition'],
-                            'sleeve_condition': form['sleeve_condition'],
-                            'color': form['color'],
-                            'notes': form['notes'],
-                            'size' : form['size'],
-                            'user_artwork': file_location}).run(g.rdb_conn)
-
-        return {'artist': form['artist'],
-                        'album': form['album'],
-                            'album art': album_art}

@@ -46,6 +46,9 @@ $(document).on('click', '.save_edit', function(e){
     var id
     $(this).parents('.edit_record').ajaxSubmit({
         success: function(data){
+            $('.modal').modal('hide')
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
             id = $(this).attr('id')
             $('.'+id).attr('src', data)
             if($(that).parents('div.modal').hasClass('list')){
@@ -75,7 +78,7 @@ $(document).on('click', '.save_edit', function(e){
             $('.record_edited').fadeIn('slow').delay(3000).fadeOut('slow')
         }
     })
-    $('.modal').modal('hide')
+    
 })
 
 $(document).on('click' ,'.delete', function(){

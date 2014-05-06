@@ -14,7 +14,7 @@
 		<img class="hidden-xs get_details {{ s['id'] }}" id="{{ s['id'] }}"
 		src="
 		{% if s['user_artwork'] == '' %}
-			{{ s['album art'] }}
+			{{ s['album_art'] }}
 		{% else %}
 			{{ s['user_artwork'] }}
 		{% endif %} " 
@@ -22,7 +22,7 @@
 		<img class="visible-xs get_details {{ s['id'] }}" id="{{ s['id'] }}"
 		src="
 		{% if s['user_artwork'] == '' %}
-			{{ s['album art'] }}
+			{{ s['album_art'] }}
 		{% else %}
 			{{ s['user_artwork'] }}
 		{% endif %} " 
