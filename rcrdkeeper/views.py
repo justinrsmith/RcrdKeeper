@@ -1,12 +1,12 @@
 from rcrdkeeper import app
-from flask import g, render_template, request, jsonify, session, redirect, abort
+from flask import g, render_template, request, jsonify, session,\
+                  redirect, abort
 import json
 import rethinkdb as r
 from rethinkdb.errors import RqlRuntimeError, RqlDriverError
 from flask.ext.mail import Message, Mail
 import config
 import emails
-from werkzeug.security import generate_password_hash, check_password_hash
 import hashlib
 from werkzeug import secure_filename
 import os
@@ -14,7 +14,7 @@ from rdio import Rdio
 import datetime
 from pytz import timezone
 from rcrdkeeper import models as m
-from rethinkORM import RethinkCollection
+from werkzeug.security import generate_password_hash
 
 rdio = Rdio(('zq33ap8e526smhskzx7xkghf', 'rudg3ASW2T'))
 RCRDKEEPER_DB = 'rcrdkeeper'
@@ -47,9 +47,7 @@ def register():
     error = None
 
     if request.method == 'POST':
-
-        user_exist = list(users.filter(
-            {'email': request.form['email']}).run(g.rdb_conn))
+        user_exist = m.User.get(email=request.form['email'])
 
         if user_exist:
             error = "Account with this email already exist. \
@@ -60,24 +58,26 @@ def register():
             hash_pw = generate_password_hash(
                 request.form['register_password'])
 
-            response = users.insert({
-                          'name': request.form['name'],
-                          'email': request.form['email'],
-                          'password': hash_pw,
-                          'birthdate': request.form['birthdate'],
-                          'key': None}).run(g.rdb_conn)
+            new_user = m.User()
+
+            new_user.name      = request.form['name']
+            new_user.email     = request.form['email']
+            new_user.password  = hash_pw
+            new_user.birthdate = request.form['birthdate']
+            new_user.key       = None
+
+            new_user.save()
 
             email_message = 'Thank you for registering with RcrdKeeper. No further action is required to use your account.'
 
-            session['user'] = response['generated_keys'][0]
+            session['user'] = new_user['id']
 
             succ = 'Account successfully created. You are now logged in. \
                 You will recieve a confirmation email shortly.'
 
-            if response['inserted'] == 1:
-                emails.send_email('RcrdKeeper Registration Confirmation',
-                    app.config['MAIL_USERNAME'],
-                    request.form['email'], email_message)
+            emails.send_email('RcrdKeeper Registration Confirmation',
+                app.config['MAIL_USERNAME'],
+                request.form['email'], email_message)
 
         return render_template('home.html', succ=succ, first_login=True)
 
@@ -159,7 +159,7 @@ def home():
 @app.route('/list_records/<int:page>/', methods=['GET'])
 @app.route('/list_records/<string:artist>', methods=['GET'])
 def get_records(page, artist=None):
-    print request.path
+
     if artist == 'undefined':
         artist = None
 
@@ -196,8 +196,6 @@ def get_records(page, artist=None):
                         size=size,
                         record_count=record_count,
                         last_page=last_page)
-
-
 
 
 @app.route('/submit/<string:location>', methods=['POST', 'GET'])
