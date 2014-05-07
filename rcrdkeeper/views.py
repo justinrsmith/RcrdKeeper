@@ -138,7 +138,7 @@ def home():
 
     selection = m.Records.filter(
         user=session['user']).orderBy(
-        'artist').orderBy('album', direct='asc').limit(16).fetch()
+        'artist', direct='asc').limit(16).fetch()
 
     rec_count = len(m.Records.filter(user=session['user']).fetch())
 
@@ -166,13 +166,13 @@ def get_records(page, artist=None):
     if not artist:
         selection = m.Records.filter(
             user=session['user']).offset((page-1)*16).limit(16).orderBy(
-            'artist').orderBy('album', direct='asc').fetch()
+            'artist', direct='asc').fetch()
 
     else:
         selection = m.Records.filter(
             user=session['user'], artist=artist).offset(
-            (page-1)*16).limit(16).orderBy('artist').orderBy(
-            'album', direct='asc').fetch()
+            (page-1)*16).limit(16).orderBy(
+            'artist', direct='asc').fetch()
 
     condition = m.Condition.order_by('order')
 
