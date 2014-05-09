@@ -127,7 +127,7 @@ def home():
         return render_template('login.html')
 
     get_artist = m.Records.filter(
-        user=session['user']).orderBy('artist').fetch()
+        user=session['user']).order_by('artist').fetch()
 
     artist_list = []
     for a in get_artist:
@@ -137,14 +137,14 @@ def home():
     artist_list.sort()
 
     selection = m.Records.filter(
-        user=session['user']).orderBy(
-        'artist', direct='asc').limit(16).fetch()
+        user=session['user']).order_by(
+        'artist', 'album').limit(16).fetch()
 
     rec_count = len(m.Records.filter(user=session['user']).fetch())
 
-    condition = m.Condition.order_by('order')
+    condition = m.Condition.order_by('order').fetch()
 
-    size = m.Size.order_by('order')
+    size = m.Size.order_by('order').fetch()
 
     return render_template('home.html',
                             artist_list=artist_list,
@@ -165,18 +165,17 @@ def get_records(page, artist=None):
 
     if not artist:
         selection = m.Records.filter(
-            user=session['user']).offset((page-1)*16).limit(16).orderBy(
-            'artist', direct='asc').fetch()
+            user=session['user']).order_by(
+            'artist', 'album').offset((page-1)*16).limit(16).fetch()
 
     else:
         selection = m.Records.filter(
-            user=session['user'], artist=artist).offset(
-            (page-1)*16).limit(16).orderBy(
-            'artist', direct='asc').fetch()
+            user=session['user'], artist=artist).order_by(
+            'artist', 'album').offset((page-1)*16).limit(16).fetch()
 
-    condition = m.Condition.order_by('order')
+    condition = m.Condition.order_by('order').fetch()
 
-    size = m.Size.order_by('order')
+    size = m.Size.order_by('order').fetch()
 
     record_count = len(selection)
     record_count_total = len(m.Records.filter(user=session['user']).fetch())
@@ -240,9 +239,9 @@ def new_record(location):
 
     new_record.save()
 
-    condition = m.Condition.order_by('order')
+    condition = m.Condition.order_by('order').fetch()
 
-    size = m.Size.order_by('order')
+    size = m.Size.order_by('order').fetch()
 
     record = m.Records.get(id=new_record['id'])
 

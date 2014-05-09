@@ -8,10 +8,10 @@ r.connect(db='rcrdkeeper').repl()
 class Query(object):
 
 	@classmethod
-	def order_by(self, *field):
+	def order_by(self, key1, *args):
 		collection = RethinkCollection(self)
-		collection.orderBy(*field, direct='asc')
-		return collection.fetch()
+		collection.order_by(key1, *args)
+		return collection
 
 	@classmethod
 	def get(self, **kwargs):
