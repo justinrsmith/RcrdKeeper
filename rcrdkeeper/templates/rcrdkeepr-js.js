@@ -253,8 +253,16 @@ $('.next').click(function(e){
     if(!$(this).hasClass('disabled')){
         page++
 
-        if(!$('.next').hasClass('list')){
+        if(!$('.next').hasClass('list') && !$('.next').hasClass('date_added')){
             $.get('/get_records/' + page, function(data){
+                $('.albums').empty()
+                $('.albums').append(data)
+                that = data
+                $(that).find('div')
+            })
+        }
+        else if($('.next').hasClass('date_added')){
+            $.get('/get_records/' + page + '/date_added', function(data){
                 $('.albums').empty()
                 $('.albums').append(data)
                 that = data
@@ -409,4 +417,20 @@ $(document).on('click', '.search_mobile', function(){
     }
 })
 
+$('#added_recent').click(function(){
+    $.get('/get_records/' + page + '/date_added', function(data){
+        $('.albums').empty()
+        $('.albums').append(data)
+        $('.next').addClass('date_added')
+    })
+})
 
+$('#wish_list').click(function(){
+
+    $('.new_record').attr('action', '/wish_list')
+
+    $.get('/wish_list', function(data){
+        $('.albums').empty()
+        $('.albums').append(data)
+    })
+})

@@ -29,6 +29,10 @@ class Query(object):
 		return collection 
 
 
+class Wish_List(RethinkModel, Query):
+	table = 'wish_list'
+
+
 class Condition(RethinkModel, Query):
 	table = 'record_condition'
 

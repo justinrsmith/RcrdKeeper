@@ -158,15 +158,23 @@ def home():
 @app.route('/get_records/<int:page>/<string:artist>', methods=['GET'])
 @app.route('/list_records/<int:page>/', methods=['GET'])
 @app.route('/list_records/<string:artist>', methods=['GET'])
-def get_records(page, artist=None):
+@app.route('/get_records/<int:page>/<string:sort>', methods=['GET'])
+def get_records(page, artist=None, sort=None):
 
     if artist == 'undefined':
         artist = None
 
-    if not artist:
+    if not artist and not sort:
         selection = m.Records.filter(
             user=session['user']).order_by(
             'artist', 'album').offset((page-1)*16).limit(16).fetch()
+    elif sort:
+
+        selection = m.Records.filter(
+            user=session['user']).order_by(
+            'date_added').fetch()
+        selection.reverse()
+        selection = selection[((page-1)*16):((page-1)*16)+16]
 
     else:
         selection = m.Records.filter(
@@ -273,6 +281,7 @@ def edit_record():
     else:
         file_location = ''
 
+    record.format = request.form['format']
     record.color = request.form['color']
     record.notes = request.form['notes']
     record.size  = request.form['size']
@@ -285,6 +294,17 @@ def edit_record():
     record.save()
 
     return redirect('/')
+
+
+@app.route('/wish_list/', methods=['POST', 'GET'])
+def wish_list():
+
+    if request.method == 'POST':
+        print request.form['artist']
+        print request.form['album']
+
+
+    return render_template('wish_list.html')
 
 
 @app.route('/delete/<string:record_id>', methods=['POST'])
