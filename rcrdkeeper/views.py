@@ -194,7 +194,8 @@ def get_records(page, artist=None):
                         condition=condition,
                         size=size,
                         record_count=record_count,
-                        last_page=last_page)
+                        last_page=last_page,
+                        page=page)
 
 
 @app.route('/submit/<string:location>', methods=['POST', 'GET'])
