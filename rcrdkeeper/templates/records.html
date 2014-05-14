@@ -1,6 +1,6 @@
 {% for s in selection %}
 	<div class="col-md-3 col-xs-6 record_hold">
-	    <div class="col-md-offset-8 col-md-1 col-xs-1 col-xs-offset-5">
+	    <div class="col-md-offset-6 col-md-1 col-xs-1 col-xs-offset-3">
 	        <a data-toggle="modal" href="#editModal{{ s['id'] }}">
 	        	<span class="glyphicon record glyphicon-pencil"></span>
 	        </a>
@@ -10,6 +10,15 @@
 	            <span id="delete_logo" class="glyphicon glyphicon-remove"></span>
 	        </a>
 	    </div>
+	    {% if wish_list %}
+	    <div class="col-md-1 col-xs-1 album_options" id="{{ s['id'] }}">
+	        <a href="#" class="delete">
+	        	<a id="move_to_collection">
+	            	<span id="delete_logo" class="glyphicon glyphicon-check"></span>
+	            </a>
+	        </a>
+	    </div>
+	    {% endif %}
 
 		<img class="hidden-xs get_details {{ s['id'] }}" id="{{ s['id'] }}"
 		src="

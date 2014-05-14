@@ -137,7 +137,7 @@ def home():
     artist_list.sort()
 
     selection = m.Records.filter(
-        user=session['user']).order_by(
+        user=session['user'], status='collection').order_by(
         'artist', 'album').limit(16).fetch()
 
     rec_count = len(m.Records.filter(user=session['user']).fetch())
@@ -166,19 +166,20 @@ def get_records(page, artist=None, sort=None):
 
     if not artist and not sort:
         selection = m.Records.filter(
-            user=session['user']).order_by(
+            user=session['user'], status='collection').order_by(
             'artist', 'album').offset((page-1)*16).limit(16).fetch()
     elif sort:
 
         selection = m.Records.filter(
-            user=session['user']).order_by(
+            user=session['user'], status='collection').order_by(
             'date_added').fetch()
         selection.reverse()
         selection = selection[((page-1)*16):((page-1)*16)+16]
 
     else:
         selection = m.Records.filter(
-            user=session['user'], artist=artist).order_by(
+            user=session['user'], artist=artist, 
+            status='collection').order_by(
             'artist', 'album').offset((page-1)*16).limit(16).fetch()
 
     condition = m.Condition.order_by('order').fetch()
@@ -186,7 +187,8 @@ def get_records(page, artist=None, sort=None):
     size = m.Size.order_by('order').fetch()
 
     record_count = len(selection)
-    record_count_total = len(m.Records.filter(user=session['user']).fetch())
+    record_count_total = len(m.Records.filter(user=session['user'],
+        status='collection').fetch())
     last_page = record_count_total-(16*page)
 
     if not 'list_records' in request.path:
@@ -206,8 +208,10 @@ def get_records(page, artist=None, sort=None):
                         page=page)
 
 
-@app.route('/submit/<string:location>', methods=['POST', 'GET'])
-def new_record(location):
+@app.route('/submit/<string:view_type>', methods=['POST', 'GET'])
+@app.route('/submit/<string:view_type>/<string:status>', 
+                methods=['POST', 'GET'])
+def new_record(view_type, status=None):
 
     album_info = rdio.call('search', {'query': request.form['album'],
                                          'types': 'album'})
@@ -242,9 +246,14 @@ def new_record(location):
     new_record.color = ''
     new_record.size  = ''
     new_record.notes = ''
+    new_record.format = ''
     new_record.date_added = r.expr(datetime.datetime.now(
                         timezone('US/Central')))
     new_record.user_artwork=''
+    if status:
+        new_record.status = 'wish_list'
+    else:
+        new_record.status = 'collection'
 
     new_record.save()
 
@@ -254,7 +263,7 @@ def new_record(location):
 
     record = m.Records.get(id=new_record['id'])
 
-    if location == 'grid':
+    if view_type== 'grid':
         return render_template('new_record.html',
                                 s=record,
                                 condition=condition,
@@ -297,16 +306,37 @@ def edit_record():
     return redirect('/')
 
 
-@app.route('/wish_list/', methods=['POST', 'GET'])
-def wish_list():
-
+@app.route('/wish_list/<int:page>', methods=['POST', 'GET'])
+def wish_list(page=None):
+    
     if request.method == 'POST':
-        print request.form['artist']
-        print request.form['album']
+        record = m.Records.get(id=request.form['id'])
+        record.status = 'collection'
+        record.save()
 
+        return ''
+    else:
+        selection = m.Records.filter(
+            user=session['user'],status='wish_list').order_by(
+            'artist', 'album').offset((page-1)*16).limit(16).fetch()
 
-    return render_template('wish_list.html')
+        condition = m.Condition.order_by('order').fetch()
 
+        size = m.Size.order_by('order').fetch()
+
+        record_count = len(selection)
+        record_count_total = len(m.Records.filter(user=session['user'],
+            status='collection').fetch())
+        #last_page = record_count_total-(16*page)
+
+        return render_template('records.html',
+                                selection=selection,
+                                condition=condition,
+                                size=size,
+                                record_count=record_count,
+                                wish_list=True)#,
+                                #last_page=last_page)
+    
 
 @app.route('/delete/<string:record_id>', methods=['POST'])
 def delete_record(record_id=None):
