@@ -297,41 +297,78 @@ $('.previous').click(function(){
 $(document).on('click', '.list_view', function(e){
     e.preventDefault()
 
+
     $('.refresh').addClass('list')
 
     $('#record_search').addClass('list')
 
     $('.paginate_holder').hide()
 
-    $.get('/list_records/1/', function(data){
-        $('.albums').empty()
-        $('.albums').append(data)
-        $(document).ready(function(){
-            $('.view_controls').children('.view').remove()
-            $('.view_controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
-                    <span class="glyphicon glyphicon-th"></span> \
-                </button>')
+    $('#wish_list').addClass('list')
+
+    if(!$(this).hasClass('wish_list')){
+        console.log('if')
+        $.get('/list_records/1/', function(data){
+            $('.albums').empty()
+            $('.albums').append(data)
+            $(document).ready(function(){
+                $('.view_controls').children('.view').remove()
+                $('.view_controls').append('<button type="button" class="view grid_view btn btn-default btn-ms"> \
+                        <span class="glyphicon glyphicon-th"></span> \
+                    </button>')
+            })
         })
-    })
+    }
+    else{
+        console.log('else')
+        $.get('/wish_list/list/1', function(data){
+            $('.albums').empty()
+            $('.albums').append(data)
+            $('#wish_list').removeClass('grid_view')
+            //$('#wish_list').addClass('grid_view').text('Collection')
+            $(document).ready(function(){
+                $('.view_controls').children('.view').remove()
+                $('.view_controls').append('<button type="button" class="view grid_view btn btn-default btn-ms wish_list"> \
+                        <span class="glyphicon glyphicon-th"></span> \
+                    </button>')
+            })
+        })
+    }
 })
 
 $(document).on('click', '.grid_view', function(e){
     e.preventDefault()
 
     $('#wish_list').removeClass('grid_view').text('Wish List')
+    $('.new_record').attr('action', '/submit/grid')
 
     $('.paginate_holder').show()
 
     $('.refresh').removeClass('list')
 
-    $.get('/get_records/1', function(data){
-        $('.albums').empty()
-        $('.albums').append(data)
-        $('.view_controls').children('.view').remove()
-        $('.view_controls').append('<button type="button" class="view list_view btn btn-default btn-ms"> \
-                <span class="glyphicon glyphicon-list"></span> \
-            </button>')
-    })
+    if(!$(this).hasClass('wish_list')){
+        $.get('/get_records/1', function(data){
+            $('#wish_list').removeClass('list').removeClass('grid_view').text('Wish List')
+            $('.albums').empty()
+            $('.albums').append(data)
+            $('.view_controls').children('.view').remove()
+            $('.view_controls').append('<button type="button" class="view list_view btn btn-default btn-ms"> \
+                    <span class="glyphicon glyphicon-list"></span> \
+                </button>')
+        })
+    }
+    else{
+        $.get('/wish_list/grid/1', function(data){
+            $('#wish_list').removeClass('list')
+            $('.albums').empty()
+            $('.albums').append(data)
+            //$('#wish_list').addClass('grid_view').text('Collection')
+            $('.view_controls').children('.view').remove()
+            $('.view_controls').append('<button type="button" class="view list_view btn btn-default btn-ms wish_list"> \
+                    <span class="glyphicon glyphicon-list"></span> \
+                </button>')
+        })
+    }
 })
 
 $(document).on('click', '.refresh', function(e){
@@ -420,7 +457,15 @@ $(document).on('click', '.search_mobile', function(){
 })
 
 $('#added_recent').click(function(){
-    $.get('/get_records/' + page + '/date_added', function(data){
+    $.get('/get_records/' + page + '/added_recent', function(data){
+        $('.albums').empty()
+        $('.albums').append(data)
+        $('.next').addClass('date_added')
+    })
+})
+
+$('#added_oldest').click(function(){
+    $.get('/get_records/' + page + '/added_oldest', function(data){
         $('.albums').empty()
         $('.albums').append(data)
         $('.next').addClass('date_added')
@@ -430,10 +475,16 @@ $('#added_recent').click(function(){
 $('#wish_list').click(function(e){
     e.preventDefault()
 
+    var view = 'grid'
+    if($('#wish_list').hasClass('list')){
+        view = 'list'
+    }
+    
     $('.new_record').attr('action', '/submit/grid/wish_list')
-
-    if(!$(this).hasClass('grid_view')){
-        $.get('/wish_list/1', function(data){
+    $('.list_view').addClass('wish_list')
+    
+    if(!$(this).hasClass('grid_view_collection')){
+        $.get('/wish_list/'+view+'/1', function(data){
             $('.albums').empty()
             $('.albums').append(data)
             $('#wish_list').addClass('grid_view').text('Collection')
@@ -445,16 +496,23 @@ $('.wish').click(function(){
     e.preventDefault()
 
     $('.new_record').ajaxSubmit({
-    //    success: function(data){
-            
-    //    }
     })
 })
 
 $(document).on('click','#move_to_collection',function(){
 
-    var id = $(this).parent().attr('id')
-    data = {'id': id}
-    $.post('/wish_list/1', data, function(){
-    })
+    var conf = confirm('Are you sure you wish to move this record to your collection?')
+    var that = $(this)
+
+    if (conf == true){
+        var id = $(this).parent().attr('id')
+        data_in = {'id': id}
+        $.post('/wish_list/grid/1', data_in, function(data){
+            $('.data').empty()
+            $('.data').append(data)
+            $(that).parents('div.record_hold').fadeOut('slow')
+            $('.moved_to_collection').fadeIn('slow').delay(3000).fadeOut('slow')
+            $('#wish_list').removeClass('list')
+        })
+    }
 })

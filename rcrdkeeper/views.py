@@ -100,6 +100,11 @@ def login():
             session['user'] = user['id']
             session['user_full_name'] = user['name']
 
+
+            user.last_login = r.expr(datetime.datetime.now(
+                        timezone('US/Central')))
+            user.save()
+
             return redirect('/home')
         else:
             if not auth_user['is_user']:
@@ -169,12 +174,19 @@ def get_records(page, artist=None, sort=None):
             user=session['user'], status='collection').order_by(
             'artist', 'album').offset((page-1)*16).limit(16).fetch()
     elif sort:
-
-        selection = m.Records.filter(
-            user=session['user'], status='collection').order_by(
-            'date_added').fetch()
-        selection.reverse()
-        selection = selection[((page-1)*16):((page-1)*16)+16]
+        if sort == 'added_recent':
+            selection = m.Records.filter(
+                user=session['user'], status='collection').order_by(
+                'date_added').fetch()
+            #results pull asc, flip to desc
+            selection.reverse()
+            selection = selection[((page-1)*16):((page-1)*16)+16]
+        #oldeset record first
+        else:
+            selection = m.Records.filter(
+                user=session['user'], status='collection').order_by(
+                'date_added').fetch()
+            selection = selection[((page-1)*16):((page-1)*16)+16]
 
     else:
         selection = m.Records.filter(
@@ -306,15 +318,15 @@ def edit_record():
     return redirect('/')
 
 
-@app.route('/wish_list/<int:page>', methods=['POST', 'GET'])
-def wish_list(page=None):
-    
+@app.route('/wish_list/<string:view_type>/<int:page>', methods=['POST', 'GET'])
+def wish_list(view_type, page=None):
+
     if request.method == 'POST':
         record = m.Records.get(id=request.form['id'])
         record.status = 'collection'
         record.save()
 
-        return ''
+        return record.artist + ' - ' + record.album
     else:
         selection = m.Records.filter(
             user=session['user'],status='wish_list').order_by(
@@ -329,14 +341,22 @@ def wish_list(page=None):
             status='collection').fetch())
         #last_page = record_count_total-(16*page)
 
-        return render_template('records.html',
-                                selection=selection,
-                                condition=condition,
-                                size=size,
-                                record_count=record_count,
-                                wish_list=True)#,
-                                #last_page=last_page)
-    
+        if view_type == 'grid':
+            return render_template('records.html',
+                                    selection=selection,
+                                    condition=condition,
+                                    size=size,
+                                    record_count=record_count,
+                                    wish_list=True)#,
+                                    #last_page=last_page)
+        else:
+            return render_template('list_records.html',
+                            selection=selection,
+                            condition=condition,
+                            size=size,
+                            record_count=record_count,
+                            page=page,
+                            wish_list=True)
 
 @app.route('/delete/<string:record_id>', methods=['POST'])
 def delete_record(record_id=None):

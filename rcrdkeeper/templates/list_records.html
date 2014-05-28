@@ -6,6 +6,7 @@
 			<th class="hidden-xs">Release Date</th>
 			<th></th>
 			<th></th>
+			<th></th>
 		</tr>
 		{% for s in selection %}
 			<tr id="{{ s['id'] }}">
@@ -23,6 +24,15 @@
 	    				    <span id="delete_logo" class="glyphicon glyphicon-remove"></span>
 	    				</a>
 	    			</div>
+	    		</td>
+	    		<td>
+	    			{% if wish_list %}
+	    			<div class="col-md-1 col-xs-1 album_options" id="{{ s['id'] }}">
+	    			    	<a id="move_to_collection">
+	    			        	<span id="delete_logo" class="glyphicon glyphicon-check"></span>
+	    			        </a>
+	    			</div>
+	    			{% endif %}
 	    		</td>
 			</tr>
 		{% endfor %}
